@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Secure Login: Protected Page</title>
+        <title>سامانه مرکز پیام آتش‌نشانی خوی</title>
         {% if gvm.isMobile %}
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/mobile.css?version=1" />
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/table-styles-mobile.css" />
@@ -28,20 +28,20 @@
               <nav class="vertical">
                 <ul>
                   <li>
-                    <label for="main_page">Return to ..</label>
+                    <label for="main_page">بازگشت به</label>
                     <input type="radio" name="verticalMenu" id="main_page" />
                     <div>
                       <ul>
-                        <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM|raw }}">Main Menu</a></li>
+                        <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM|raw }}">منوی اصلی</a></li>
                       </ul>
                     </div>
                   </li>
                   <li>
-                    <label for="logout">Exit</label>
+                    <label for="logout">خروج</label>
                     <input type="radio" name="verticalMenu" id="logout" />
                     <div>
                       <ul>
-                        <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php">Logout</a></li>
+                        <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php">خروج از سامانه</a></li>
                       </ul>
                     </div>
                   </li>
@@ -59,39 +59,39 @@
    
             <center>
             {% if usersmenu_ctl_action_error == 100 %}
-            <b><font color="red">Invalid password! Passwords must match and be at least 5 characters.</font></b>
+            <b><font color="red">رمز عبور نامعتبر است. رمزها باید یکسان و حداقل ۵ کاراکتر باشند.</font></b>
             {% elseif usersmenu_ctl_action_error == 101 %}
-            <b><font color="red">You must enter a Firehall Id</font></b>
+            <b><font color="red">شناسه ایستگاه الزامی است</font></b>
             {% elseif usersmenu_ctl_action_error == 102 %}
-            <b><font color="red">You must enter a User Id</font></b>            
+            <b><font color="red">نام کاربری الزامی است</font></b>            
             {% endif %}
 
             {% if gvm.firehall.LDAP.ENABLED == true %}
-            <b><font color="red">*Note: You cannot edit user info in LDAP mode.</font></b>
+            <b><font color="red">*توجه: در حالت LDAP امکان ویرایش کاربران وجود ندارد.</font></b>
             {% endif %}
             <table id="box-table-a">
                 <thead>
                     <tr>
-                    <th scope="col">Select</th>
-                    <th scope="col">Record Id</th>
-                    <th scope="col">Firehall Id</th>
-                    <th scope="col">User Id</th>
-                    <th scope="col">Email Address</th>
-                    <th scope="col">User Type</th>
+                    <th scope="col">انتخاب</th>
+                    <th scope="col">شناسه</th>
+                    <th scope="col">شناسه ایستگاه</th>
+                    <th scope="col">نام کاربری</th>
+                    <th scope="col">ایمیل</th>
+                    <th scope="col">نوع کاربر</th>
                     {% if usersmenu_ctl_edit_mode is defined and usersmenu_ctl_edit_mode %}
-                        <th scope="col">Password</th>
-                        <th scope="col">Re-type Password</th>
+                        <th scope="col">رمز عبور</th>
+                        <th scope="col">Re-type رمز عبور</th>
                     {% endif %}
-                    <th scope="col">Mobile Phone</th>
-                    <th scope="col">Admin Access{%if gvm.firehall.LDAP.ENABLED == true and not usersmenu_vm.selfedit_mode %}<br>{{ gvm.firehall.LDAP.LDAP_LOGIN_ADMIN_GROUP_FILTER }}{% endif %}</th>
-                    <th scope="col">Enable SMS{%if gvm.firehall.LDAP.ENABLED == true and not usersmenu_vm.selfedit_mode %}<br>{{ gvm.firehall.LDAP.LDAP_LOGIN_SMS_GROUP_FILTER }}{% endif %}</th>
-                    <th scope="col">Enable Responding{%if gvm.firehall.LDAP.ENABLED == true and not usersmenu_vm.selfedit_mode %}<br>{{ gvm.firehall.LDAP.LDAP_LOGIN_RESPOND_SELF_GROUP_FILTER }}{% endif %}</th>
-                    <th scope="col">Enable Responding for others{%if gvm.firehall.LDAP.ENABLED == true and not usersmenu_vm.selfedit_mode %}<br>{{ gvm.firehall.LDAP.LDAP_LOGIN_RESPOND_OTHERS_GROUP_FILTER }}{% endif %}</th>
-                    <th scope="col">User Active</th>
-                    <th scope="col">User Locked</th>
-                    <th scope="col">Two Factor Login</th>
-                    <th scope="col" class="column_nowrap">Update Date/Time</th>
-                    <th scope="col" colspan="2" align="Center">Modify Data</th>
+                    <th scope="col">شماره موبایل</th>
+                    <th scope="col">دسترسی مدیر{%if gvm.firehall.LDAP.ENABLED == true and not usersmenu_vm.selfedit_mode %}<br>{{ gvm.firehall.LDAP.LDAP_LOGIN_ADMIN_GROUP_FILTER }}{% endif %}</th>
+                    <th scope="col">فعال‌سازی پیامک{%if gvm.firehall.LDAP.ENABLED == true and not usersmenu_vm.selfedit_mode %}<br>{{ gvm.firehall.LDAP.LDAP_LOGIN_SMS_GROUP_FILTER }}{% endif %}</th>
+                    <th scope="col">فعال‌سازی پاسخ‌دهی{%if gvm.firehall.LDAP.ENABLED == true and not usersmenu_vm.selfedit_mode %}<br>{{ gvm.firehall.LDAP.LDAP_LOGIN_RESPOND_SELF_GROUP_FILTER }}{% endif %}</th>
+                    <th scope="col">فعال‌سازی پاسخ‌دهی برای دیگران{%if gvm.firehall.LDAP.ENABLED == true and not usersmenu_vm.selfedit_mode %}<br>{{ gvm.firehall.LDAP.LDAP_LOGIN_RESPOND_OTHERS_GROUP_FILTER }}{% endif %}</th>
+                    <th scope="col">کاربر فعال</th>
+                    <th scope="col">کاربر قفل</th>
+                    <th scope="col">ورود دومرحله‌ای</th>
+                    <th scope="col" class="column_nowrap">تاریخ/زمان به‌روزرسانی</th>
+                    <th scope="col" colspan="2" align="Center">ویرایش</th>
                     <tr>
                 </thead>
             
@@ -101,7 +101,7 @@
                 <td>
                 </td>
                 <td>
-                NEW
+                جدید
                 </td>
                 <td>
                     <input id="edit_firehall_id" name="edit_firehall_id" type="input" 
@@ -159,7 +159,7 @@
                            type="checkbox" checked/>
                 </td>
                 <td>
-                    no
+                    خیر
                 </td>                
                 <td>
                     <input id="edit_user_twofa" name="edit_user_twofa" 
@@ -170,10 +170,10 @@
                 </td>
                 {% if not gvm.firehall.LDAP.ENABLED %}
                 <td colspan="2">
-                    <input type="button" value="Save" 
+                    <input type="button" value="ذخیره" 
                            onclick="save_user(this.form, -1);" />
                     
-                    <input type="button" value="Cancel" 
+                    <input type="button" value="انصراف" 
                            onclick="window.location.href='{{ gvm.RR_DOC_ROOT }}/controllers/users-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM|raw }}{{ usersmenu_vm.selfedit_mode ? '&se=true' : '' }}'; return false;" />
                 </td>
                 {% else %}
@@ -181,11 +181,11 @@
                 <td colspan="2"></td>
                     {% else %}
                 <td{{ usersmenu_vm.selfedit_mode ? ' colspan="2" ' : '' }}>
-                    <input type="button" value="Edit" 
+                    <input type="button" value="ویرایش" 
                            onclick="edit_user(this.form, -1);" />
                 </td>
                 <td>
-                    <input type="button" value="Delete" 
+                    <input type="button" value="حذف" 
                            onclick="return delete_user(this.form, {{ user.id }},'{{ user.user_id }}');" />
                 </td>
                     {% endif %}
@@ -206,7 +206,7 @@
 	                <td colspan="16">
 	                {% endif %}
 	                    <center>
-                        <input type="button" value="Add New User" onclick="edit_user(this.form, -1);" />
+                        <input type="button" value="افزودن کاربر جدید" onclick="edit_user(this.form, -1);" />
                         {% if usersmenu_ctl_cache_active == true %}
                         <input type="button" value="Force Logoff of selected users" onclick="end_user_sessions(this.form);" />
                         {% endif %}
@@ -305,7 +305,7 @@
 	                <input id="edit_admin_access" name="edit_admin_access" 
 	                       type="checkbox" {{ user.access_admin ? 'checked="checked"' : '' }} />
 	            {% else %}
-	                {{ user.access_admin ? 'yes' : 'no' }}
+	                {{ user.access_admin ? 'yes' : 'خیر' }}
 	            {% endif %}
 	            </td>
 	            <td>
@@ -313,7 +313,7 @@
 	                <input id="edit_sms_access" name="edit_sms_access" 
 	                       type="checkbox" {{ user.access_sms ? 'checked="checked"' : '' }} />
 	            {% else %}
-	                {{ user.access_sms ? 'yes' : 'no' }}
+	                {{ user.access_sms ? 'yes' : 'خیر' }}
 	            {% endif %}
 	            </td>
 	            
@@ -322,7 +322,7 @@
                     <input id="edit_respond_self_access" name="edit_respond_self_access" 
                            type="checkbox" {{ user.access_respond_self ? 'checked="checked"' : '' }} />
                 {% else %}
-                    {{ user.access_respond_self ? 'yes' : 'no' }}
+                    {{ user.access_respond_self ? 'yes' : 'خیر' }}
                 {% endif %}
                 </td>
                 <td>
@@ -330,7 +330,7 @@
                     <input id="edit_respond_others_access" name="edit_respond_others_access" 
                            type="checkbox" {{ user.access_respond_others ? 'checked="checked"' : '' }} />
                 {% else %}
-                    {{ user.access_respond_others ? 'yes' : 'no' }}
+                    {{ user.access_respond_others ? 'yes' : 'خیر' }}
                 {% endif %}
                 </td>
                 <td>
@@ -338,11 +338,11 @@
                     <input id="edit_user_active" name="edit_user_active" 
                            type="checkbox" {{ user.active ? 'checked="checked"' : '' }} />
                 {% else %}
-                    {{ user.active ? 'yes' : 'no' }}
+                    {{ user.active ? 'yes' : 'خیر' }}
                 {% endif %}
                 </td>
                 <td>
-                    {{ user.locked ? 'yes' : 'no' }}
+                    {{ user.locked ? 'yes' : 'خیر' }}
                     {% if user.locked and not usersmenu_vm.selfedit_mode %}
                     <input type="button" value="Unlock" 
 	                               onclick="return unlock_user(this.form, {{ user.id }},'{{ user.user_id }}');" />
@@ -372,7 +372,7 @@
                                 return false;
                             }
                             else {
-                                if(confirm('Confirm that you want to REMOVE Two Factor Authentication for user: {{ user.user_id }}?')) {
+                                if(confirm('آیا می‌خواهید ورود دومرحله‌ای برای کاربر حذف شود: {{ user.user_id }}?')) {
                                     url += "&form_action=remove-otp";
                                     window.open (url,"2fa-enable");
                                     //document.getElementById("content").innerHTML='<object type="text/html" data='+url+'></object>';
@@ -404,20 +404,20 @@
                         // When the user clicks on <span> (x), close the modal
                         //span.onclick = function() {
                         //    debugger;
-                        //    modal.style.display = "none";
+                        //    modal.style.display = "خیرne";
                         //}
 
                         // When the user clicks anywhere outside of the modal, close it
                         //window.onclick = function(event) {
                         //    debugger;
                         //    if (event.target == modal) {
-                        //        modal.style.display = "none";
+                        //        modal.style.display = "خیرne";
                         //    }
                         //}
                     </script>
         
                 {% else %}
-                    {{ user.twofa ? 'yes' : 'no' }}
+                    {{ user.twofa ? 'yes' : 'خیر' }}
                 {% endif %}
                 </td>
     
@@ -426,10 +426,10 @@
 	            </td>
 	            {% if edit_current_row and not gvm.firehall.LDAP.ENABLED %}
 	                <td colspan="2">
-	                <input type="button" value="Save" 
+	                <input type="button" value="ذخیره" 
 	                       onclick="save_user(this.form, {{ user.id }});" />
 	                
-	                <input type="button" value="Cancel" 
+	                <input type="button" value="انصراف" 
 	                       onclick="window.location.href='{{ gvm.RR_DOC_ROOT }}/controllers/users-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM|raw }}{{ usersmenu_vm.selfedit_mode ? '&se=true' : '' }}'; return false;" />
 	                </td>
 	            {% else %}
@@ -437,12 +437,12 @@
 	                    <td colspan="2"></td>
 	                {% else %}
 	                    <td{{ usersmenu_vm.selfedit_mode ? ' colspan="2" ' : '' }}>
-	                    <input type="button" value="Edit" 
+	                    <input type="button" value="ویرایش" 
 	                           onclick="edit_user(this.form, {{ user.id }});" />
 	                    </td>
 	                    {% if not usersmenu_vm.selfedit_mode %}
 	                        <td>
-	                        <input type="button" value="Delete" 
+	                        <input type="button" value="حذف" 
 	                               onclick="return delete_user(this.form, {{ user.id }},'{{ user.user_id }}');" />
 	                        </td>
 	                    {% endif %}
@@ -528,11 +528,11 @@
 
     function toggleVisibility(itemId) {
         var item = document.getElementById(itemId);
-        if(item.style.display == "none") {
+        if(item.style.display == "خیرne") {
             item.style.display="block";
         }
         else {
-            item.style.display="none";
+            item.style.display="خیرne";
         }
     }
     

@@ -1,4 +1,4 @@
-<button onclick="toggleVisibility('user_send_msg');">Show/Hide Send Message</button>            
+<button onclick="toggleVisibility('user_send_msg');">نمایش/پنهان‌سازی ارسال پیام</button>            
 <form action="{{ gvm.RR_DOC_ROOT }}/controllers/{{ override_smc_controller is defined ? override_smc_controller : 'send-message-controller.php' }}?{{ gvm.RR_JWT_TOKEN_PARAM }}" 
       method="post" id="user_send_msg" name="user_send_msg" 
       style="display:{% if sendmsg_vm is not defined or 
@@ -9,7 +9,7 @@
     <table id="box-table-a" style="width:350px; height:100px;">
         <tr>
             <td>
-            <span id="msgTitle">Send a message:</span>
+            <span id="msgTitle">ارسال پیام:</span>
             </td>
         </tr>
         <tr>
@@ -19,9 +19,9 @@
         </tr>
         <tr>
             <td>
-            <input type="button" value="Send using SMS" onclick="send_msg(this.form, 'sms');" />&nbsp;
-            <input type="button" value="Send using Android" onclick="send_msg(this.form, 'fcm');" />&nbsp;
-            <input type="button" value="Send using Email" onclick="send_msg(this.form, 'email');" />
+            <input type="button" value="ارسال با پیامک" onclick="send_msg(this.form, 'sms');" />&nbsp;
+            <input type="button" value="ارسال به اندروید" onclick="send_msg(this.form, 'fcm');" />&nbsp;
+            <input type="button" value="ارسال با ایمیل" onclick="send_msg(this.form, 'email');" />
             </td>
         </tr>
         {% if sendmsg_ctl_result_status is defined %}

@@ -48,28 +48,22 @@
     {% endfor %}
 
     {% if callout_audit_vm.callout_details_responding_list is empty %}
-    <b>NO Data.</b>
+    <b>داده‌ای موجود نیست.</b>
     {% endif %}
 
     <script type="text/javascript">
-        function mapsSelector(callout_address_origin, callout_address_dest) {
-            if /* if we're on iOS, open in Apple Maps */
-                ((navigator.platform.indexOf("iPhone") != -1) || 
-                (navigator.platform.indexOf("iPod") != -1) || 
-                (navigator.platform.indexOf("iPad") != -1)) {
-                //window.open("maps://maps.google.com/maps?sdaddr="+callout_address_origin+",&amp;daddr="+callout_address_dest+"dirflg=d");
-                window.open("https://www.google.com/maps/dir/?api=1" +
-                            //"&origin="+callout_address_origin+
-                            "&destination="+callout_address_dest+
-                            "&travelmode=driving&dir_action=navigate");
+        function buildNeshanMapUrl(latlng, address) {
+            var coords = (latlng || '').trim();
+            if (coords && coords.indexOf(',') !== -1) {
+                return "https://neshan.org/maps/@" + coords + ",15z";
             }
-            else {/* else use Google */
-                //window.open("https://maps.google.com/maps?sdaddr="+callout_address_origin+",&amp;daddr="+callout_address_dest+"dirflg=d");
-                window.open("https://www.google.com/maps/dir/?api=1" +
-                            //"&origin="+callout_address_origin+
-                            "&destination="+callout_address_dest+
-                            "&travelmode=driving&dir_action=navigate");
+            if (address) {
+                return "https://neshan.org/maps?q=" + encodeURIComponent(address);
             }
+            return "https://neshan.org/maps";
+        }
+        function mapsSelector(callout_geo_dest, callout_address_dest) {
+            window.open(buildNeshanMapUrl(callout_geo_dest, callout_address_dest));
         }
     </script>
     

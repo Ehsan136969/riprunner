@@ -22,6 +22,10 @@ require_once __RIPRUNNER_ROOT__ . '/logging.php';
 Authentication::setJWTCookie();
 Authentication::sec_session_start();
 new LiveCalloutWarningViewModel($global_vm, $view_template_vars);
+if ($global_vm->auth->isAdmin != true) {
+	header('Location: '.$global_vm->RR_DOC_ROOT.'/controllers/callout-history-controller.php?'.$global_vm->RR_JWT_TOKEN_PARAM);
+	exit;
+}
 $securitymenu_mv = new SecurityMenuViewModel($global_vm, $view_template_vars);
 
 // Load out template

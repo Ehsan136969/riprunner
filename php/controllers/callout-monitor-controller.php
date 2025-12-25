@@ -27,6 +27,12 @@ else {
 	\riprunner\Authentication::sec_session_start();
 }
 $live_callout_info = new LiveCalloutWarningViewModel($global_vm, $view_template_vars);
+if(isset($server_mode) !== true || $server_mode !== 'true') {
+	if ($global_vm->auth->isAdmin != true && $global_vm->auth->isDispatcher != true) {
+		header('Location: '.$global_vm->RR_DOC_ROOT.'/controllers/login-controller.php');
+		exit;
+	}
+}
 
 $view_template_vars["callout_monitor_ast"] = get_query_param('ast');
 $view_template_vars["callout_monitor_fhid"] = get_query_param('fhid');

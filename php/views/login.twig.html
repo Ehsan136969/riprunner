@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Secure Login: Log In</title>
+        <title>ورود به سامانه مرکز پیام آتش‌نشانی خوی</title>
         {% if gvm.isMobile %}
 		<link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/mobile.css" />
 		<link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/callout-mobile.css?version=1" />
@@ -20,44 +20,44 @@
     
     	<div class="container_center">
     	{% if gvm.isMobile %} 
-        <b>Mobile Device Detected</b> 
+        <b>دستگاه همراه شناسایی شد</b> 
     	{% elseif gvm.isTablet %} 
-        <b>Tablet Device Detected</b> 
+        <b>تبلت شناسایی شد</b> 
         {% else %} 
-        <b>Desktop Device Detected</b> 
+        <b>رایانه شناسایی شد</b> 
         {% endif %}
     	
 		<div class="container">
 			<section id="content">
 	        <form action="{{ gvm.RR_DOC_ROOT }}/process_login.php" method="post" 
 	               accept-charset="utf-8" id="login_form" name="login_form">
-	        	<h1>Login User</h1>
+	        	<h1>ورود به سامانه</h1>
 	        	{% include 'display-logo.twig.html' %}
 
 				{% if loginvm.hasError %}
 				<p class="ci_header_type_blink_response_status">{{ loginvm.errorMsg }}</p>
 				{% endif %}
 	        	<div>
-	            	<label for="firehall_id">Firehall Id</label>
+	            	<label for="firehall_id">شناسه ایستگاه</label>
 	            	<input type="text" name="firehall_id" id="firehall_id" 
-	            	       placeholder="your firehall id" required 
+	            	       placeholder="شناسه ایستگاه" required 
 	            		   onKeyPress="enterMovesFocus(this,event,document.getElementById('user_id'))"/>
 	            </div>
 	            <div>
-					<label for="user_id">User Id</label>
+					<label for="user_id">نام کاربری</label>
 			        <input type="text" name="user_id" id="user_id" 
-			               placeholder="your user id" required 
+			               placeholder="نام کاربری" required 
 			        	   onKeyPress="enterMovesFocus(this,event,document.getElementById('password'))"/>
 			    </div>
 			    <div>
-	            	<label for="password">Password</label>
+	            	<label for="password">رمز عبور</label>
 	            	<input type="password" name="password" id="password" 
-	            	       placeholder="password" required 
+	            	       placeholder="رمز عبور" required 
 	            		   onKeyPress="return submitenter(this,event,document.getElementById('btnLogin').onclick);" />
 				</div>
 				<div >
 	            	<input type="button" id="btnLogin" 
-	                		value="Login" 
+	                		value="ورود" 
 	                   		onclick="return formhash(document.getElementById('login_form'), document.getElementById('password'));" />
 	            </div>	
 	        </form>
@@ -65,9 +65,9 @@
 			</div>
 	
 	        {% if gvm.auth.isAuth %}
-	        <p>If you are done browsing, please <a href="{{ gvm.RR_DOC_ROOT }}/logout.php">log out</a>.</p>
+	        <p>اگر کار شما تمام شده است، <a href="{{ gvm.RR_DOC_ROOT }}/logout.php">از سامانه خارج شوید</a>.</p>
 	        {% endif %}
-	        <p>You are currently logged {{ gvm.auth.isAuth ? 'in' : 'out' }}.</p>
+	        <p>وضعیت ورود: {{ gvm.auth.isAuth ? 'وارد شده' : 'خارج شده' }}.</p>
 
         </div>
     </body>

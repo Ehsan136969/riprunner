@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Secure Login: Protected Page</title>
+        <title>سامانه مرکز پیام آتش‌نشانی خوی</title>
         {% if gvm.isMobile %}
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/mobile.css" />
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/table-styles-mobile.css" />
@@ -27,23 +27,23 @@
           <nav class="vertical">
             <ul>
               <li>
-                <label for="main_page">Return to ..</label>
+                <label for="main_page">بازگشت به</label>
                 <input type="radio" name="verticalMenu" id="main_page" />
                 <div>
                   <ul>
-                    <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/callout-history-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}">Callouts</a></li>
+                    <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/callout-history-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}">حوادث</a></li>
                   </ul>
                   <ul>
-                    <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}">Main Menu</a></li>
+                    <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}">منوی اصلی</a></li>
                   </ul>
                 </div>
               </li>
               <li>
-                <label for="logout">Exit</label>
+                <label for="logout">خروج</label>
                 <input type="radio" name="verticalMenu" id="logout" />
                 <div>
                   <ul>
-                    <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php">Logout</a></li>
+                    <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php">خروج از سامانه</a></li>
                   </ul>
                 </div>
               </li>
@@ -52,7 +52,7 @@
         </div>
                     
         {% if response_history_vm.response_list is empty %}
-        <b>NO Data.</b>
+        <b>داده‌ای موجود نیست.</b>
         {% endif %}
                     
         <div class="inner_table">
@@ -86,7 +86,7 @@
 	                        {% if row.latitude != 0.0 and row.longitude != 0.0 %}
 	                        <td>
 	                            <a target="_blank" 
-	                                href="https://maps.google.com/maps?saddr={{ row.responder_origin }}&daddr={{ row.callout_address_dest }} ({{ row.callout_address_dest }})">
+	                                href="https://neshan.org/maps?q={{ row.callout_address_dest|url_encode }}">
 	                                {{ row[col_name] }}
 	                            </a>
 	                        </td>

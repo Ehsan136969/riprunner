@@ -1,6 +1,7 @@
 FROM phusion/baseimage:noble-1.0.1
 MAINTAINER Matthew Rayner <hello@rayner.io>
 ENV REFRESHED_AT 2025-04-02
+ENV TZ=Asia/Tehran
 
 # based on dgraziotin/lamp
 # MAINTAINER Daniel Graziotin <daniel@ineed.coffee>
@@ -40,7 +41,7 @@ RUN add-apt-repository -y ppa:ondrej/php && \
   apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C && \
   apt-get update && \
   apt-get -y upgrade && \
-  apt-get -y install supervisor wget git apache2 php-xdebug libapache2-mod-php mysql-server php-mysql pwgen php-apcu php8.4-mcrypt php-gd php-xml php-mbstring zip unzip php-zip curl php-curl && \
+  apt-get -y install supervisor wget git apache2 php-xdebug libapache2-mod-php mysql-server php-mysql php-pgsql pwgen php-apcu php8.4-mcrypt php-gd php-xml php-mbstring zip unzip php-zip curl php-curl tzdata && \
   apt-get -y autoremove && \
   echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
@@ -60,9 +61,9 @@ ADD /docker/supporting_files/mysqld_innodb.cnf /etc/mysql/conf.d/mysqld_innodb.c
 RUN sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf && \
   sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/mysql.conf.d/mysqld.cnf
 
-# Set PHP timezones to America/Vancouver
-RUN sed -i "s/;date.timezone =/date.timezone = America\/Vancouver/g" /etc/php/8.4/apache2/php.ini
-RUN sed -i "s/;date.timezone =/date.timezone = America\/Vancouver/g" /etc/php/8.4/cli/php.ini
+# Set PHP timezones to Asia/Tehran
+RUN sed -i "s/;date.timezone =/date.timezone = Asia\\/Tehran/g" /etc/php/8.4/apache2/php.ini
+RUN sed -i "s/;date.timezone =/date.timezone = Asia\\/Tehran/g" /etc/php/8.4/cli/php.ini
 
 # Remove pre-installed database
 RUN rm -rf /var/lib/mysql

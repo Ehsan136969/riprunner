@@ -199,6 +199,118 @@ Installation:
 -------------
 Getting started video - basic installation on Windows (click image below):
 
+## Local development (Docker Compose)
+
+This project supports running the PHP app in Docker and connecting to a Postgres
+database using environment variables. **Do not commit secrets**; keep them in your
+local `.env` or your Liara dashboard.
+
+### 1) Create a `.env` file (local only)
+
+Use the provided `env.example` and fill values locally (do **not** commit the file).
+At minimum set:
+
+```
+APP_ENV=production
+TZ=Asia/Tehran
+APP_URL=http://localhost:8080
+
+DB_HOST=firekhoydb
+DB_PORT=5432
+DB_NAME=postgres
+DB_USER=root
+DB_PASS=***SET_LOCALLY***
+DB_SSLMODE=require
+
+SEED_ADMIN_USERNAME=admin
+SEED_ADMIN_PASSWORD=***SET_LOCALLY***
+SEED_DISPATCHER_USERNAME=dispatcher
+SEED_DISPATCHER_PASSWORD=***SET_LOCALLY***
+```
+
+Optionally you can provide `DATABASE_URL` instead of `DB_*`:
+
+```
+DATABASE_URL=postgresql://root:***PASSWORD***@firekhoydb:5432/postgres?sslmode=require
+```
+
+### 2) Start services
+
+This repo includes a `docker-compose.yml` that runs Postgres + RipRunner locally.
+
+```
+docker compose up -d --build
+```
+
+### 3) Seed Admin and Dispatcher users (from ENV)
+
+This step reads `SEED_*` variables and creates users if they do not exist.
+It is safe to run multiple times (idempotent).
+
+```
+docker compose exec riprunner php /app/install-db.php --fhid=0 --form_action=install
+```
+
+### 3b) Seed stations, firefighters, and shift rules (FireKhoy)
+
+This script is idempotent and safe to re-run:
+
+```
+docker compose exec riprunner php /app/seed-firekhoy.php
+```
+
+### 4) Health check
+
+```
+curl -sS http://localhost:8080/health
+```
+
+Expected response includes `success: true` and `db: ok`.
+
+#### Expected output (example)
+
+```json
+{
+  "status": "ok",
+  "success": true,
+  "db": "ok",
+  "timezone": "Asia/Tehran",
+  "time": "2024-12-22T09:30:15+03:30"
+}
+```
+
+### Quick smoke test (repeatable)
+
+This is a minimal, repeatable check that the stack is up and the DB is reachable:
+
+```
+docker compose up -d --build
+for i in {1..30}; do
+  if curl -sS http://localhost:8080/health | grep -q '"success":true'; then
+    echo "health: ok"
+    break
+  fi
+  sleep 2
+done
+```
+
+## Deploy on Liara (Docker)
+
+1. **Set Environment Variables** in Liara (do not commit secrets in git).
+   - Required: `TZ`, `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS`, `DB_SSLMODE`
+   - Optional: `DATABASE_URL`
+   - Seed: `SEED_ADMIN_USERNAME`, `SEED_ADMIN_PASSWORD`, `SEED_DISPATCHER_USERNAME`, `SEED_DISPATCHER_PASSWORD`
+2. **Build & Deploy** using the existing Docker setup in `docker/2404`.
+3. **Run Seed** once after deploy:
+   ```
+   php /app/install-db.php --fhid=0 --form_action=install
+   ```
+4. **Verify Health**:
+   ```
+   curl -sS https://<your-liara-domain>/health
+   ```
+
+
 [![Getting Started install](http://img.youtube.com/vi/ZyUfvYsW39Q/0.jpg)](https://youtu.be/ZyUfvYsW39Q)
 
 Getting started video - basic installation on Linux (click image below):
@@ -675,6 +787,30 @@ Serverless support:
 -------------------
 We have started work on the application architecture to prepare to support various vendors who offer serverless computing platforms. Documentation can be read regarding deploying to Google Cloud Run (GCR) using a docker container
 https://github.com/softcoder/riprunner/tree/master/docker  
+
+Caller ID webhook (Windows Agent integration):
+----------------------------------------------
+RipRunner can accept inbound Caller ID events from an on-prem Windows Agent (e.g., Manzoor Simin SDK) and create
+incident drafts for dispatchers.
+
+Environment variable:
+- `CALLER_WEBHOOK_SECRET` (required) shared secret for inbound requests.
+
+Endpoints:
+- `POST /api/caller/events`
+  - Header: `X-Caller-Secret: <CALLER_WEBHOOK_SECRET>`
+  - JSON body:
+    - `caller_number` (required)
+    - `timestamp` (required, ISO8601)
+    - `line` (optional)
+    - `device_index` (optional)
+    - `call_id` (optional)
+- `GET /api/caller/latest?minutes=10`
+  - Returns recent incident drafts within the time window (default 10 minutes).
+
+Notes:
+- Incoming numbers like `09xxxxxxxxx` are normalized to `+989xxxxxxxxx`.
+- The events endpoint enforces a simple rate limit (30 requests per minute per source IP).
 
 
 Contributions:

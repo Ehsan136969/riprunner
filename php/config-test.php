@@ -171,6 +171,9 @@ $GOOGLE_MAP_CITY_LOOKUP = array(
 	define( 'DEFAULT_SMS_PROVIDER_TWILIO_BASE_URL', 	'https://api.twilio.com/xxxx-xx-xx/Accounts/X/Messages.xml');
 	define( 'DEFAULT_SMS_PROVIDER_TWILIO_AUTH_TOKEN', 	'X:X');
 	define( 'DEFAULT_SMS_PROVIDER_TWILIO_FROM', 		'+xxxxxxxxxx');
+	define( 'DEFAULT_SMS_PROVIDER_KAVENEGAR_BASE_URL', 	'https://api.kavenegar.com/v1/');
+	define( 'DEFAULT_SMS_PROVIDER_KAVENEGAR_API_KEY', 	'X');
+	define( 'DEFAULT_SMS_PROVIDER_KAVENEGAR_FROM', 		'');
 
 	// ----------------------------------------------------------------------
 	// Mobile App Settings

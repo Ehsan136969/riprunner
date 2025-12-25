@@ -108,6 +108,15 @@ function extractSMSSettings() {
             $sms_settings .= "\$SMS_SETTINGS->setTwilioAuthToken('$sms_auth_token');".PHP_EOL;
             $sms_settings .= "\$SMS_SETTINGS->setTwilioFromNumber('$sms_from');".PHP_EOL;
         }
+        if($sms_gateway_type == 'KAVENEGAR') {
+            $sms_base = get_query_param('sms_kavenegar_base');
+            $sms_api_key = get_query_param('sms_kavenegar_api_key');
+            $sms_from = get_query_param('sms_kavenegar_from');
+
+            $sms_settings .= "\$SMS_SETTINGS->setKavenegarBaseURL('$sms_base');".PHP_EOL;
+            $sms_settings .= "\$SMS_SETTINGS->setKavenegarApiKey('$sms_api_key');".PHP_EOL;
+            $sms_settings .= "\$SMS_SETTINGS->setKavenegarFromNumber('$sms_from');".PHP_EOL;
+        }
         if($sms_gateway_type == 'PLIVO') {
             $sms_base = get_query_param('sms_plivo_base');
             $sms_auth_id = get_query_param('sms_plivo_auth_id');
@@ -383,6 +392,7 @@ if ($FIREHALL !== null && $isAuth) {
 		<option value="EZTEXTING">Ez Texting</option>
 		-->
 		<option value="TWILIO" selected>Twilio</option>
+		<option value="KAVENEGAR">Kavenegar</option>
 		<option value="PLIVO">Plivo</option>
         <option value="AWS">Amazon SNS</option>
 	</select>
@@ -408,6 +418,11 @@ if ($FIREHALL !== null && $isAuth) {
 	Base URL: <input type="text" name="sms_base" id="sms_base" style="width:100%;" value="https://api.twilio.com/2010-04-01/Accounts/XXXX/Messages.xml"><br>
     Authorization Token: <input type="text" name="sms_auth_token" id="sms_auth_token" value="" style="width:100%;"><br>
     Send from phone number: <input type="text" name="sms_from" id="sms_from" value="" style="width:100%;"><br>
+	</div>
+	<div name="sms_gateway_type_kavenegar" id="sms_gateway_type_kavenegar" style="display: none;">
+	Base URL: <input type="text" name="sms_kavenegar_base" id="sms_kavenegar_base" style="width:100%;" value="https://api.kavenegar.com/v1/"><br>
+    API Key: <input type="text" name="sms_kavenegar_api_key" id="sms_kavenegar_api_key" value="" style="width:100%;"><br>
+    Send from phone number: <input type="text" name="sms_kavenegar_from" id="sms_kavenegar_from" value="" style="width:100%;"><br>
 	</div>
 	<div name="sms_gateway_type_plivo" id="sms_gateway_type_plivo" style="display: none;">
 	Base URL: <input type="text" name="sms_plivo_base" id="sms_plivo_base" style="width:100%;" value="https://api.plivo.com/v1/"><br>
@@ -518,6 +533,10 @@ if ($FIREHALL !== null && $isAuth) {
     echo "$( '#sms_base').val('".$FIREHALL->SMS->SMS_PROVIDER_TWILIO_BASE_URL."');".PHP_EOL;
     echo "$( '#sms_auth_token').val('".$FIREHALL->SMS->SMS_PROVIDER_TWILIO_AUTH_TOKEN."');".PHP_EOL;
     echo "$( '#sms_from').val('".$FIREHALL->SMS->SMS_PROVIDER_TWILIO_FROM."');".PHP_EOL;
+
+    echo "$( '#sms_kavenegar_base').val('".$FIREHALL->SMS->SMS_PROVIDER_KAVENEGAR_BASE_URL."');".PHP_EOL;
+    echo "$( '#sms_kavenegar_api_key').val('".$FIREHALL->SMS->SMS_PROVIDER_KAVENEGAR_API_KEY."');".PHP_EOL;
+    echo "$( '#sms_kavenegar_from').val('".$FIREHALL->SMS->SMS_PROVIDER_KAVENEGAR_FROM."');".PHP_EOL;
     
     echo "$( '#sms_plivo_base').val('".$FIREHALL->SMS->SMS_PROVIDER_PLIVO_BASE_URL."');".PHP_EOL;
     echo "$( '#sms_plivo_auth_id').val('".$FIREHALL->SMS->SMS_PROVIDER_PLIVO_AUTH_ID."');".PHP_EOL;

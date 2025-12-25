@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Secure Login: Protected Page</title>
+        <title>سامانه مرکز پیام آتش‌نشانی خوی</title>
         {% if gvm.isMobile %}
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/mobile.css" />
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/table-styles-mobile.css" />
@@ -39,29 +39,29 @@
               <nav class="vertical">
                 <ul>
                   <li>
-                    <label for="main_page">Return to ..</label>
+                    <label for="main_page">بازگشت به</label>
                     <input type="radio" name="verticalMenu" id="main_page" />
                     <div>
                       <ul>
-                        <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}">Main Menu</a></li>
+                        <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}">منوی اصلی</a></li>
                       </ul>
                     </div>
                   </li>
                   <li>
-                    <label for="call_history">Calls</label>
+                    <label for="call_history">حوادث</label>
                     <input type="radio" name="verticalMenu" id="call_history" />
                     <div>
                       <ul>
-                        <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/callout-history-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}">Callouts and Responders</a></li>
+                        <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/callout-history-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}">حوادث و پاسخ‌دهندگان</a></li>
                       </ul>
                     </div>
                   </li>
                   <li>
-                    <label for="logout">Exit</label>
+                    <label for="logout">خروج</label>
                     <input type="radio" name="verticalMenu" id="logout" />
                     <div>
                       <ul>
-                        <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php">Logout</a></li>
+                        <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php">خروج از سامانه</a></li>
                       </ul>
                     </div>
                   </li>
@@ -112,7 +112,7 @@
                 // ------------------------------------------
                 // Pie chart of call types for all years
                 var options_allyears = {
-					'title':'Call Types - All Recorded Callouts'
+					'title':'انواع حوادث - همه حوادث ثبت‌شده'
 					,'legend': { position: 'right', textStyle: { fontSize:14 } }
 					,chartArea:{left:100,top:25,width:"75%",height:"85%"}
 					,width:'100%'
@@ -126,8 +126,8 @@
                 
                 // Create the data table.
                 var data_allyears = new google.visualization.DataTable();
-                data_allyears.addColumn('string', 'Call Type');
-                data_allyears.addColumn('number', 'Call Count');
+                data_allyears.addColumn('string', 'نوع حادثه');
+                data_allyears.addColumn('number', 'تعداد حوادث');
 
                 var json_data_allyears_encoded = '{{ reportscharts_vm.calltypes_allyears|json_encode()|raw }}';
                 var json_data_allyears = (json_data_allyears_encoded != '' ? jQuery.parseJSON(json_data_allyears_encoded) : []);
@@ -141,7 +141,7 @@
 				// ------------------------------------------
                 // Pie chart of call types for current year
                 var options_year = {
-					title:'Call Types - for the Year: {{ reportscharts_vm.report_year }}'
+					title:'نوع حادثهs - for the Year: {{ reportscharts_vm.report_year }}'
 					,'legend': { position: 'right', textStyle: { fontSize:14 } }
 					,chartArea:{left:100,top:25,width:"75%",height:"85%"}
 					,width:'50%'
@@ -154,8 +154,8 @@
                 
                 // Create the data table.
                 var data_year = new google.visualization.DataTable();
-                data_year.addColumn('string', 'Call Type');
-                data_year.addColumn('number', 'Call Count');
+                data_year.addColumn('string', 'نوع حادثه');
+                data_year.addColumn('number', 'تعداد حوادث');
 
                 var json_data_year_encoded = '{{ reportscharts_vm.calltypes_currentyear|json_encode()|raw }}';
                 var json_data_year = (json_data_year_encoded != '' ? jQuery.parseJSON(json_data_year_encoded) : []);
@@ -169,7 +169,7 @@
 				// ------------------------------------------
                 // Pie chart of call types for current month
                 var options_month = {
-					title:'Call Types - Current Month for the Year: {{ reportscharts_vm.report_year }}'
+					title:'نوع حادثهs - Current ماه for the Year: {{ reportscharts_vm.report_year }}'
 					,'legend': { position: 'right', textStyle: { fontSize:14 } }
 					,chartArea:{left:100,top:25,width:"75%",height:"85%"}
 					,width:'100%'
@@ -182,8 +182,8 @@
               
                 // Create the data table.
                 var data = new google.visualization.DataTable();
-                data.addColumn('string', 'Call Type');
-                data.addColumn('number', 'Call Count');
+                data.addColumn('string', 'نوع حادثه');
+                data.addColumn('number', 'تعداد حوادث');
 
                 var json_data_month_encoded = '{{ reportscharts_vm.calltypes_currentmonth|json_encode()|raw }}';
                 var json_data_month = (json_data_month_encoded != '' ? jQuery.parseJSON(json_data_month_encoded) : []);
@@ -198,7 +198,7 @@
                 // ------------------------------------------
                 // Line chart of call volume for current year
                 var options_year_volume = {
-					'title':'Total Call Volume by Type (All Calls) - by Month for the Year: {{ reportscharts_vm.report_year }}'
+					'title':'حجم کل حوادث بر اساس نوع (همه حوادث) - به تفکیک ماه در سال: {{ reportscharts_vm.report_year }}'
 					,hAxis: { baselineColor: '#fff', gridlineColor: 'lightgrey', textPosition: 'none' }
 					,vAxis:{ logScale:true }
 					,'legend': { position: 'right', textStyle: { fontSize:14 } }
@@ -211,7 +211,7 @@
                 
                 // Create the data table.
                 var data_year_volume = new google.visualization.DataTable();
-                data_year_volume.addColumn('string', 'Month');
+                data_year_volume.addColumn('string', 'ماه');
 
                 var json_data_year_volume_encoded = '{{ reportscharts_vm.callvoltypes_currentyear|json_encode()|raw }}';
                 var json_data_year_volume = (json_data_year_volume_encoded != '' ? jQuery.parseJSON(json_data_year_volume_encoded) : []);
@@ -230,7 +230,7 @@
                 // ------------------------------------------
                 // Line chart of call response volume for current year
                 var options_year_response_volume = {
-					'title':'Total Call Response Volume by Person (Completed/Cancelled Calls) - by Month for the Year: {{ reportscharts_vm.report_year }}'
+					'title':'حجم پاسخ‌دهی به تفکیک نفر (حوادث پایان‌یافته/لغوشده) - به تفکیک ماه در سال: {{ reportscharts_vm.report_year }}'
 					,hAxis: { 
 						 baselineColor: '#fff'
 						,gridlineColor: 'lightgrey'
@@ -249,7 +249,7 @@
                 
                 // Create the data table.
                 var data_year_response_volume = new google.visualization.DataTable();
-                data_year_response_volume.addColumn('string', 'Month');
+                data_year_response_volume.addColumn('string', 'ماه');
 
                 var json_data_year_response_volume_encoded = '{{ reportscharts_vm.callresponsevol_currentyear|json_encode()|raw }}';
                 var json_data_year_response_volume = (json_data_year_response_volume_encoded != '' ? jQuery.parseJSON(json_data_year_response_volume_encoded) : []);
@@ -296,7 +296,7 @@
 						</select>
 						<input type="button" id="load_report" 
 						onclick="location.href='{{ gvm.RR_DOC_ROOT }}/controllers/reports-charts-controller.php?report_year='+document.getElementById('select_report_year').value+'&{{ gvm.RR_JWT_TOKEN_PARAM }}';return false;"
-						class="report_submit" value="Run Reports">
+						class="report_submit" value="اجرای گزارش">
 					</td>
                 </tr>
             
@@ -320,12 +320,12 @@
             <br />
                         
             <div class="inner_table">
-            <h3>Total Call Response Volume by Person (Completed/Cancelled Calls) - by Month for the Year: {{ reportscharts_vm.report_year }}</h3>
+            <h3>حجم پاسخ‌دهی به تفکیک نفر (حوادث پایان‌یافته/لغوشده) - به تفکیک ماه در سال: {{ reportscharts_vm.report_year }}</h3>
             <table id="box-table-a" style="margin-left:auto;margin-right:auto;text-align:left">
                 {% if reportscharts_vm.callresponsevol_currentyear is defined %}
                 <thead>
                     <tr>
-                    <th scope="col">Month</th>
+                    <th scope="col">ماه</th>
                     {% for col_name in reportscharts_vm.callresponsevol_currentyear_cols %}
                     <th scope="col">{{ col_name }}</th>
                     {% endfor %}
@@ -362,7 +362,7 @@
                     {% if loop.first == false %}
                     <td>{{ sum_value }}</td>
                     {% else %}
-                    <td>Totals</td>
+                    <td>جمع</td>
                     {% endif %}
                 {% endfor %}            
                 </tr>
@@ -372,12 +372,12 @@
             </div>
             
             <div class="inner_table">
-            <h3>Total Call Response Hours by Person (Completed/Cancelled Calls) - by Month for the Year: {{ reportscharts_vm.report_year }}</h3>
+            <h3>ساعات پاسخ‌دهی به تفکیک نفر (حوادث پایان‌یافته/لغوشده) - به تفکیک ماه در سال: {{ reportscharts_vm.report_year }}</h3>
             <table id="box-table-a" style="margin-left:auto;margin-right:auto;text-align:left">
                 {% if reportscharts_vm.callresponse_hours_currentyear is defined %}
                 <thead>
                     <tr>
-                    <th scope="col">Month</th>
+                    <th scope="col">ماه</th>
                     {% for col_name in reportscharts_vm.callresponse_hours_currentyear_cols %}
                     <th scope="col">{{ col_name }}</th>
                     {% endfor %}
@@ -414,7 +414,7 @@
                     {% if loop.first == false %}
                     <td>{{ sum_value }}</td>
                     {% else %}
-                    <td>Totals</td>
+                    <td>جمع</td>
                     {% endif %}
                 {% endfor %}            
                 </tr>

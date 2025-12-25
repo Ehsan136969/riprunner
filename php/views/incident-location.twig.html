@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>ارسال موقعیت حادثه</title>
+        <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/main.css" />
+        <script type="text/JavaScript" src="{{ gvm.RR_DOC_ROOT }}/js/jquery-2.1.1.min.js"></script>
+    </head>
+    <body>
+        <div class="container_center">
+            <h1>ارسال موقعیت حادثه</h1>
+            {% if error_message %}
+                <p class="error">{{ error_message }}</p>
+            {% endif %}
+            {% if success %}
+                <p>موقعیت شما با موفقیت ثبت شد. از همکاری شما سپاسگزاریم.</p>
+            {% else %}
+                {% if token_row is null %}
+                    <p>لینک معتبر نیست یا منقضی شده است.</p>
+                {% else %}
+                    <p>لطفاً موقعیت دقیق حادثه را ارسال کنید.</p>
+                    <form method="post">
+                        <input type="hidden" name="token" value="{{ token }}" />
+                        <div>
+                            <label for="lat">عرض جغرافیایی</label>
+                            <input type="text" name="lat" id="lat" required />
+                        </div>
+                        <div>
+                            <label for="lng">طول جغرافیایی</label>
+                            <input type="text" name="lng" id="lng" required />
+                        </div>
+                        <div>
+                            <input type="hidden" name="source" id="source" value="manual" />
+                            <button type="button" onclick="useGeolocation()">دریافت موقعیت از GPS</button>
+                            <button type="submit">ارسال موقعیت</button>
+                        </div>
+                    </form>
+                    <div style="margin-top: 20px;">
+                        <iframe id="neshan-map"
+                                title="Neshan Map"
+                                width="100%"
+                                height="400"
+                                style="border:0;"
+                                loading="lazy"
+                                src="https://neshan.org/maps"></iframe>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+        <script type="text/javascript">
+            function updateMap() {
+                var lat = document.getElementById('lat').value;
+                var lng = document.getElementById('lng').value;
+                if (lat && lng) {
+                    document.getElementById('neshan-map').src = 'https://neshan.org/maps/@' + lat + ',' + lng + ',16z';
+                }
+            }
+            function useGeolocation() {
+                if (!navigator.geolocation) {
+                    alert('GPS در این مرورگر پشتیبانی نمی‌شود.');
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    document.getElementById('lat').value = pos.coords.latitude.toFixed(6);
+                    document.getElementById('lng').value = pos.coords.longitude.toFixed(6);
+                    document.getElementById('source').value = 'gps';
+                    updateMap();
+                }, function() {
+                    alert('دسترسی به GPS ممکن نیست. لطفاً مختصات را دستی وارد کنید.');
+                });
+            }
+            document.getElementById('lat').addEventListener('change', updateMap);
+            document.getElementById('lng').addEventListener('change', updateMap);
+        </script>
+    </body>
+</html>

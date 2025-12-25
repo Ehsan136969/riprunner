@@ -36,13 +36,16 @@ class AuthViewModel extends BaseViewModel {
 		if('isAdmin' === $name) {
 			return $this->userHasAcess(USER_ACCESS_ADMIN);
 		}
+		if('isDispatcher' === $name) {
+			return $this->userHasAcess(USER_ACCESS_DISPATCHER);
+		}
 		
 		return parent::__get($name);
 	}
 
 	public function __isset($name) {
 		if(in_array($name, 
-			array('isAuth','hasAuthSpecialToken', 'username','user_id','isAdmin')) === true) {
+			array('isAuth','hasAuthSpecialToken', 'username','user_id','isAdmin','isDispatcher')) === true) {
 			return true;
 		}
 		return parent::__isset($name);

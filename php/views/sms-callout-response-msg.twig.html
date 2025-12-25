@@ -1,5 +1,5 @@
 {% if callout_status_entity.IsCancelled() or callout_status_entity.IsCompleted() %}
-Responder: {{ responding_userid }} has marked the callout as: {{ callout_status_entity.getDisplayName() }}.{# This comment removes the newline that follows #}
+پاسخ‌دهنده {{ responding_userid }} وضعیت حادثه را به «{{ callout_status_entity.getDisplayName() }}» تغییر داد.{# This comment removes the newline that follows #}
 {% else %}
-Responder: {{ responding_userid }} set their status to {{ callout_status_entity.getDisplayName() }} for the callout: {{ callout.code }}{% if not responding_usereta is null %} eta: {{ responding_usereta }}{% endif %}.{# This comment removes the newline that follows #}
+پاسخ‌دهنده {{ responding_userid }} وضعیت خود را برای حادثه {{ callout.code }} به «{{ callout_status_entity.getDisplayName() }}» تغییر داد{% if not responding_usereta is null %}؛ زمان رسیدن: {{ responding_usereta }}{% endif %}.{# This comment removes the newline that follows #}
 {% endif %}

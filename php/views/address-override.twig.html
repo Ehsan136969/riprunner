@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Secure Login: Protected Page</title>
+        <title>سامانه مرکز پیام آتش‌نشانی خوی</title>
         {% if gvm.isMobile %}
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/mobile.css?version=1" />
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/table-styles-mobile.css" />
@@ -26,20 +26,20 @@
               <nav class="vertical">
                 <ul>
                   <li>
-                    <label for="main_page">Return to ..</label>
+                    <label for="main_page">بازگشت به</label>
                     <input type="radio" name="verticalMenu" id="main_page" />
                     <div>
                       <ul>
-                        <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}">Main Menu</a></li>
+                        <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}">منوی اصلی</a></li>
                       </ul>
                     </div>
                   </li>
                   <li>
-                    <label for="logout">Exit</label>
+                    <label for="logout">خروج</label>
                     <input type="radio" name="verticalMenu" id="logout" />
                     <div>
                       <ul>
-                        <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php">Logout</a></li>
+                        <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php">خروج از سامانه</a></li>
                       </ul>
                     </div>
                   </li>
@@ -48,7 +48,7 @@
             </div>
 
 <!--  
-            <button onclick="toggleVisibility('test_code');">Show/Hide Address Tester</button>            
+            <button onclick="toggleVisibility('test_code');">نمایش/پنهان‌سازی تست آدرس</button>            
             <form action="{{ gvm.RR_DOC_ROOT }}controllers/address-override-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}" 
                   method="post" id="test_code" name="test_code" 
                   style="display:{% if addressmenu_ctl_action_code_test is not defined or 
@@ -57,7 +57,7 @@
                 <table id="box-table-a" style="width:500px; height:100px;">
                     <tr>
                         <td align="center">
-                        <span id="msgTitle">Display the Notification Text for a specified code:</span>
+                        <span id="msgTitle">نمایش متن اعلان برای کد مشخص:</span>
                         </td>
                     </tr>
                     <tr>
@@ -67,7 +67,7 @@
                     </tr>
                     <tr>
                         <td align="center">
-                        <input type="button" value="Generate Notification Text Example" onclick="send_msg(this.form, 'code_test');" />
+                        <input type="button" value="تولید نمونه متن اعلان" onclick="send_msg(this.form, 'code_test');" />
                         </td>
                     </tr>
                     <tr>
@@ -86,23 +86,23 @@
             <table id="box-table-a">
                 <thead>
                     <tr>
-                    <th scope="col">Record Id</th>
-                    <th scope="col" class="column_nowrap">Address</th>
-                    <th scope="col" class="column_nowrap">GEO Latitude</th>
-                    <th scope="col" class="column_nowrap">GEO Longitude</th>
-                    <th scope="col" class="column_nowrap">Comments</th>
-                    <th scope="col" class="column_nowrap">Effective Date</th>
-                    <th scope="col" class="column_nowrap">Expiration Date</th>
+                    <th scope="col">شناسه</th>
+                    <th scope="col" class="column_nowrap">آدرس</th>
+                    <th scope="col" class="column_nowrap">عرض جغرافیایی</th>
+                    <th scope="col" class="column_nowrap">طول جغرافیایی</th>
+                    <th scope="col" class="column_nowrap">توضیحات</th>
+                    <th scope="col" class="column_nowrap">تاریخ شروع</th>
+                    <th scope="col" class="column_nowrap">تاریخ پایان</th>
                                         
-                    <th scope="col" class="column_nowrap">Update Date/Time</th>
-                    <th scope="col" colspan="2" align="Center">Modify Data</th>
+                    <th scope="col" class="column_nowrap">تاریخ/زمان به‌روزرسانی</th>
+                    <th scope="col" colspan="2" align="Center">ویرایش</th>
                     <tr>
                 </thead>
 
                 {% if addressmenu_ctl_edit_addressid is null and not addressmenu_ctl_insert_new %}
                 <tr>
                     <td colspan="14">
-                        <input type="button" value="Add New" onclick="edit_address(this.form, -1);" />
+                        <input type="button" value="افزودن" onclick="edit_address(this.form, -1);" />
                     </td>
                 </tr>
                 {% endif %}
@@ -111,7 +111,7 @@
                       (addressmenu_ctl_insert_new is defined and addressmenu_ctl_insert_new) %}
                 <tr>
                 <td>
-                NEW
+                جدید
                 </td>
                 <td class="column_nowrap">
                     <input id="edit_address" name="edit_address" type="input" value="{{ not addressoverride_vm.address_auto_insert is null ? addressoverride_vm.address_auto_insert['address'] : '' }}"/>
@@ -132,10 +132,10 @@
                     <input id="edit_expiration_date" name="edit_expiration_date" type="input" value=""/>
                 </td>
                 <td colspan="3">
-                <input type="button" value="Save" 
+                <input type="button" value="ذخیره" 
                        onclick="save_address(this.form, -1);" />
                 
-                <input type="button" value="Cancel" 
+                <input type="button" value="انصراف" 
                        onclick="window.location.href='{{ gvm.RR_DOC_ROOT }}/controllers/address-override-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}'; return false;" />
                 </td>
                 </tr>
@@ -207,19 +207,19 @@
                 
                 {% if edit_current_row %}
                     <td colspan="2">
-                    <input type="button" value="Save" 
+                    <input type="button" value="ذخیره" 
                            onclick="save_address(this.form, {{ address.id }});" />
                     
-                    <input type="button" value="Cancel" 
+                    <input type="button" value="انصراف" 
                            onclick="window.location.href='{{ gvm.RR_DOC_ROOT }}/controllers/address-override-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}'; return false;" />
                     </td>
                 {% else %}
                     <td>
-                    <input type="button" value="Edit" 
+                    <input type="button" value="ویرایش" 
                            onclick="edit_address(this.form, {{ address.id }});" />
                     </td>
                     <td>
-                    <input type="button" value="Delete" 
+                    <input type="button" value="حذف" 
                            onclick="return delete_address(this.form, {{ address.id }},'{{ address.address|escape('js') }}');" />
                     </td>
                 {% endif %}

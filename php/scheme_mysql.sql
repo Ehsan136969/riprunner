@@ -137,6 +137,26 @@ CREATE TABLE IF NOT EXISTS `callouts_response_audit` (
   `status` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `caller_events` (
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `caller_number` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `call_time` datetime NOT NULL,
+  `line` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `device_index` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `call_id` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `raw_payload` text COLLATE utf8_unicode_ci NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `incident_drafts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `caller_number` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `last_call_time` datetime NOT NULL,
+  `status` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'new',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 CREATE INDEX config_fhid_keyname_keyindex ON config (firehall_id, keyname, keyindex);
 
 CREATE INDEX user_accounts_fhid_uid ON user_accounts (firehall_id,user_id);
@@ -147,3 +167,7 @@ CREATE INDEX callouts_id_status ON callouts (id,status);
 CREATE INDEX callouts_response_useracctid ON callouts_response (useracctid);
 CREATE INDEX callouts_response_calloutid ON callouts_response (calloutid);
 CREATE INDEX callouts_response_status ON callouts_response (status);
+
+CREATE INDEX caller_events_number_time ON caller_events (caller_number, call_time);
+CREATE UNIQUE INDEX incident_drafts_caller_number ON incident_drafts (caller_number);
+CREATE INDEX incident_drafts_last_call_time ON incident_drafts (last_call_time);

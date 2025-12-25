@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Secure Login: Protected Page</title>
+        <title>سامانه مرکز پیام آتش‌نشانی خوی</title>
         {% if gvm.isMobile %}
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/mobile.css" />
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/table-styles-mobile.css" />
@@ -62,7 +62,7 @@
 			        },
 	  		        error: function(request, status, error) {
 			          //debugger;
-			          alert('Error saving changes, error msg: ' + request.responseText);                 
+			          alert('خطا در ذخیره تغییرات. پیام خطا: ' + request.responseText);                 
 			        }
 			   });
 		    }
@@ -88,20 +88,20 @@
               <nav class="vertical">
                 <ul>
                   <li>
-                    <label for="main_page">Return to ..</label>
+                    <label for="main_page">بازگشت به</label>
                     <input type="radio" name="verticalMenu" id="main_page" />
                     <div>
                       <ul>
-                        <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}">Main Menu</a></li>
+                        <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}">منوی اصلی</a></li>
                       </ul>
                     </div>
                   </li>
                   <li>
-                    <label for="logout">Exit</label>
+                    <label for="logout">خروج</label>
                     <input type="radio" name="verticalMenu" id="logout" />
                     <div>
                       <ul>
-                        <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php">Logout</a></li>
+                        <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php">خروج از سامانه</a></li>
                       </ul>
                     </div>
                   </li>
@@ -109,7 +109,7 @@
               </nav>
             </div>
 
-            <h2>Rip Runner Config - System Settings</h2>
+            <h2>تنظیمات سامانه ریپ‌رانر</h2>
             <div id="riprunner_config" style="font-size:20px; color: white; height: 400px; overflow: auto;border: 2px solid #555;">
             <center>
             <input type='button' value='Reset All system settings to defaults' onclick="if(confirm('Are you sure that you want to reset all values to their defaults?')) saveToDatabase(this,'default_value','revertall','all'); return false;">
@@ -151,7 +151,7 @@
             </div>
 
             {% for firehall_id, firehall_attributes in systemconfig_vm.firehalls_list %}
-            <h2>Rip Runner Config - Firehall Settings for hall#: {{ firehall_id }}</h2>
+            <h2>تنظیمات ایستگاه برای شناسه: {{ firehall_id }}</h2>
             <div id="riprunner_fhconfig{{ firehall_id }}" style="font-size:20px; color: white; height: 400px; overflow: auto;border: 2px solid #555;">
             <center>
             <table id="box-table-a">

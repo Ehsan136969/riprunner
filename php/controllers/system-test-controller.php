@@ -24,6 +24,10 @@ require_once __RIPRUNNER_ROOT__ . '/logging.php';
 \riprunner\Authentication::setJWTCookie();
 \riprunner\Authentication::sec_session_start();
 new LiveCalloutWarningViewModel($global_vm, $view_template_vars);
+if ($global_vm->auth->isAdmin != true) {
+	header('Location: '.$global_vm->RR_DOC_ROOT.'/controllers/callout-history-controller.php?'.$global_vm->RR_JWT_TOKEN_PARAM);
+	exit;
+}
 $testModel = new SystemTestModel($global_vm, $view_template_vars);
 
 new SystemTestMenuController($global_vm, $testModel, $view_template_vars);
