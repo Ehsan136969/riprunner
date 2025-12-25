@@ -33,7 +33,10 @@ catch(\Exception $e) {
 }
 
 require_once __RIPRUNNER_ROOT__ . '/functions.php';
-require __DIR__ . '/vendor/autoload.php';
+$autoload = __DIR__ . '/vendor/autoload.php';
+if(file_exists($autoload)) {
+    require $autoload;
+}
 
 function caller_webhook_get_header($name) {
     $headers = array();

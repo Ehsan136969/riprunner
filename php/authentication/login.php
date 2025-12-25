@@ -18,7 +18,10 @@ error_reporting(E_ALL);
 
 require_once __RIPRUNNER_ROOT__.'/config.php';
 require_once __RIPRUNNER_ROOT__.'/authentication/authentication.php';
-require __RIPRUNNER_ROOT__.'/vendor/autoload.php';
+$autoload = __RIPRUNNER_ROOT__ . '/vendor/autoload.php';
+if(file_exists($autoload)) {
+    require $autoload;
+}
 require_once __RIPRUNNER_ROOT__.'/functions.php';
 require_once __RIPRUNNER_ROOT__.'/logging.php';
 

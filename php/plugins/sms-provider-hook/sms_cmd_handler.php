@@ -22,7 +22,10 @@ require_once __RIPRUNNER_ROOT__ . '/models/callout-details.php';
 require_once __RIPRUNNER_ROOT__ . '/config/config_manager.php';
 require_once __RIPRUNNER_ROOT__ . '/firehall_parsing.php';
 require_once __RIPRUNNER_ROOT__ . '/signals/signal_manager.php';
-require __RIPRUNNER_ROOT__ . '/vendor/autoload.php';
+$autoload = __RIPRUNNER_ROOT__ . '/vendor/autoload.php';
+if(file_exists($autoload)) {
+	require $autoload;
+}
 require_once __RIPRUNNER_ROOT__ . '/core/CalloutStatusType.php';
 require_once __RIPRUNNER_ROOT__ . '/logging.php';
 

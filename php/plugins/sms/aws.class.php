@@ -11,7 +11,10 @@ if ( defined('INCLUSION_PERMITTED') === false ||
 }
 
 require_once 'plugin_interfaces.php';
-require __RIPRUNNER_ROOT__ . '/vendor/autoload.php';
+$autoload = __RIPRUNNER_ROOT__ . '/vendor/autoload.php';
+if(file_exists($autoload)) {
+	require $autoload;
+}
 
 use \Aws\Sns\SnsClient; 
 use \Aws\Exception\AwsException;
