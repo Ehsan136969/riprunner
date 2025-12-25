@@ -23,6 +23,10 @@ require_once __RIPRUNNER_ROOT__ . '/logging.php';
 \riprunner\Authentication::setJWTCookie();
 \riprunner\Authentication::sec_session_start();
 new LiveCalloutWarningViewModel($global_vm, $view_template_vars);
+if ($global_vm->auth->isAdmin != true) {
+	header('Location: '.$global_vm->RR_DOC_ROOT.'/controllers/callout-history-controller.php?'.$global_vm->RR_JWT_TOKEN_PARAM);
+	exit;
+}
 if(isset($global_vm->firehall) === true && $global_vm->firehall !== null) {
     $view_template_vars["riprunner_config"] = $global_vm->firehall->toString();
     $view_template_vars["riprunner_config_db_schema_version"] = $global_vm->auth->getAuthEntity()->getDbSchemaVersion();

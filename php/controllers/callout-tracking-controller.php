@@ -19,6 +19,10 @@ require_once __RIPRUNNER_ROOT__ . '/models/callout-tracking-model.php';
 // Register our view and variables for the template
 \riprunner\Authentication::setJWTCookie();
 \riprunner\Authentication::sec_session_start(true);
+if ($global_vm->auth->isAdmin != true && $global_vm->auth->isDispatcher != true) {
+	header('Location: '.$global_vm->RR_DOC_ROOT.'/controllers/login-controller.php');
+	exit;
+}
 new CalloutTrackingViewModel($global_vm, $view_template_vars);
 // Load out template
 $template = $twig->resolveTemplate(

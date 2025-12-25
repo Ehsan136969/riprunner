@@ -27,29 +27,23 @@
         {% set callout_pending = row.callout_status_completed == false and 
                                  row.callout_status_cancelled == false %}
         <script type="text/javascript">
-            function mapsSelector(callout_address_origin, callout_address_dest) {
-                if /* if we're on iOS, open in Apple Maps */
-                    ((navigator.platform.indexOf("iPhone") != -1) || 
-                    (navigator.platform.indexOf("iPod") != -1) || 
-                    (navigator.platform.indexOf("iPad") != -1)) {
-                    //window.open("maps://maps.google.com/maps?sdaddr="+callout_address_origin+",&amp;daddr="+callout_address_dest+"dirflg=d");
-                    window.open("https://www.google.com/maps/dir/?api=1" +
-                                //"&origin="+callout_address_origin+
-                                "&destination="+callout_address_dest+
-                                "&travelmode=driving&dir_action=navigate");
+            function buildNeshanMapUrl(latlng, address) {
+                var coords = (latlng || '').trim();
+                if (coords && coords.indexOf(',') !== -1) {
+                    return "https://neshan.org/maps/@" + coords + ",15z";
                 }
-                else {/* else use Google */
-                    //window.open("https://maps.google.com/maps?sdaddr="+callout_address_origin+",&amp;daddr="+callout_address_dest+"dirflg=d");
-                    window.open("https://www.google.com/maps/dir/?api=1" +
-                                //"&origin="+callout_address_origin+
-                                "&destination="+callout_address_dest+
-                                "&travelmode=driving&dir_action=navigate");
+                if (address) {
+                    return "https://neshan.org/maps?q=" + encodeURIComponent(address);
                 }
+                return "https://neshan.org/maps";
             }
-            function updateResponderStatus(user_id, row_id) {
+            function mapsSelector(callout_geo_dest, callout_address_dest) {
+                window.open(buildNeshanMapUrl(callout_geo_dest, callout_address_dest));
+            }
+            function updateپاسخ‌دهندهوضعیت(user_id, row_id) {
                 //debugger; 
-                if(confirm('Confirm that '+user_id+' status should be '+
-                            $( '#ui_call_update_response_status'+row_id+' option:selected' ).text()+'?')) { 
+                if(confirm('تأیید کنید '+user_id+' باید به وضعیت '+
+                            $( '#ui_call_update_response_status'+row_id+' option:selected' ).text()+'؟')) { 
                     $('#form_call_update_response_status_'+row_id).attr('action',
                     '{{ gvm.RR_DOC_ROOT }}/cr/fhid={{ callout_details_vm.firehall_id }}&cid={{ callout_details_vm.callout_id }}&uid='+user_id+'&ckid={{ callout_details_vm.calloutkey_id }}{% if callout_details_vm.member_id is not null %}&member_id={{ callout_details_vm.member_id }}{% endif %}&status='+$( '#ui_call_update_response_status'+row_id ).val()+'&{{ gvm.RR_JWT_TOKEN_PARAM|raw }}');
                     $('form#form_call_update_response_status_'+row_id).submit();
@@ -92,16 +86,16 @@
         
 		<!-- Tab links -->
         <div class="tab">
-            <button class="tablinks" onclick="openTab(event, 'Responders')" id="tabResponders">Current Activity</button>
-            <button class="tablinks" onclick="openTab(event, 'Map');" id="tabMap">Map</button>
-            <button class="tablinks" onclick="openTab(event, 'UnknownResponders')" id="tabUnknownResponders">Responder Actions</button>
+            <button class="tablinks" onclick="openTab(event, 'Responders')" id="tabResponders">وضعیت فعلی</button>
+            <button class="tablinks" onclick="openTab(event, 'Map');" id="tabMap">نقشه</button>
+            <button class="tablinks" onclick="openTab(event, 'UnknownResponders')" id="tabUnknownResponders">اقدامات پاسخ‌دهندگان</button>
         </div>
         <!-- Tab content -->
         <div id="Responders" class="tabcontent">
 
 		<table class="box-table-a" border="1" width="100%">
-            <tr><td><span class="ci_header_units">YOUR ARRIVAL TIME: </span><span class="ci_header_units_list" id="geo_tag"></span></td></tr>
-            <tr><td><span class="ci_header_units">UNITS RESPONDING: </span><span class="ci_header_units_list">{{ row.units }}</span></td></tr>
+            <tr><td><span class="ci_header_units">زمان رسیدن شما: </span><span class="ci_header_units_list" id="geo_tag"></span></td></tr>
+            <tr><td><span class="ci_header_units">واحدهای پاسخ‌دهنده: </span><span class="ci_header_units_list">{{ row.units }}</span></td></tr>
             <tr>
                 <td>
             {% if callout_details_vm.member_id is not null and callout_pending %}
@@ -121,14 +115,14 @@
                                 <span class='inset-button'>{{ row_no.user_id }}</span>
                             </td>
                             <td class="ci_align_cell" colspan="2">
-                                <INPUT TYPE="button" VALUE="Send" 
+                                <INPUT TYPE="button" VALUE="ارسال" 
                                         class="ci_respondnow_update" 
                                         onclick="$('#call_no_response_me{{ row_no.id }}').attr('action','{{ gvm.RR_DOC_ROOT }}/cr/fhid={{ callout_details_vm.firehall_id }}&cid={{ callout_details_vm.callout_id }}&uid={{ row_no.user_id }}&ckid={{ callout_details_vm.calloutkey_id }}{% if callout_details_vm.member_id is not null %}&member_id={{ callout_details_vm.member_id }}{% endif %}&status='+$( '#ui_call_set_response_status_me{{ row_no.id }}' ).val()+'&{{ gvm.RR_JWT_TOKEN_PARAM|raw }}');
-                                        if(confirmAppendGeoCoordinates('Confirm that {{ row_no.user_id }} status should be '+$( '#ui_call_set_response_status_me{{ row_no.id }} option:selected' ).text()+'?',document.getElementById('call_no_response_me{{ row_no.id }}'))) document.getElementById('call_no_response_me{{ row_no.id }}').submit();"/>
+                                        if(confirmAppendGeoCoordinates('تأیید کنید {{ row_no.user_id }} باید به وضعیت '+$( '#ui_call_set_response_status_me{{ row_no.id }} option:selected' ).text()+'؟',document.getElementById('call_no_response_me{{ row_no.id }}'))) document.getElementById('call_no_response_me{{ row_no.id }}').submit();"/>
 
                                 <select id="ui_call_set_response_status_me{{ row_no.id }}" class="ci_respondnow"
                                         onchange="$('#call_no_response_me{{ row_no.id }}').attr('action','{{ gvm.RR_DOC_ROOT }}/cr/fhid={{ callout_details_vm.firehall_id }}&cid={{ callout_details_vm.callout_id }}&uid={{ row_no.user_id }}&ckid={{ callout_details_vm.calloutkey_id }}{% if callout_details_vm.member_id is not null %}&member_id={{ callout_details_vm.member_id }}{% endif %}&status='+$( '#ui_call_set_response_status_me{{ row_no.id }}' ).val()+'&{{ gvm.RR_JWT_TOKEN_PARAM|raw }}');
-                                                  if(confirmAppendGeoCoordinates('Confirm that {{ row_no.user_id }} status should be '+$( '#ui_call_set_response_status_me{{ row_no.id }} option:selected' ).text()+'?',document.getElementById('call_no_response_me{{ row_no.id }}'))) document.getElementById('call_no_response_me{{ row_no.id }}').submit();">
+                                                  if(confirmAppendGeoCoordinates('تأیید کنید {{ row_no.user_id }} باید به وضعیت '+$( '#ui_call_set_response_status_me{{ row_no.id }} option:selected' ).text()+'؟',document.getElementById('call_no_response_me{{ row_no.id }}'))) document.getElementById('call_no_response_me{{ row_no.id }}').submit();">
                                     {% for status_def in callout_details_vm.callout_status_defs %}
                                         {% if status_def.hasAccess(callout_details_vm.getMemberAccessValue(row_no.user_id)) and 
                                             status_def.isUserType(callout_details_vm.getMemberType(row_no.user_id)) and 
@@ -141,7 +135,7 @@
                                 <form id="call_no_response_me{{ row_no.id }}" 
                                     action="{{ gvm.RR_DOC_ROOT }}/cr/fhid={{ callout_details_vm.firehall_id }}&cid={{ callout_details_vm.callout_id }}&uid={{ row_no.user_id }}&ckid={{ callout_details_vm.calloutkey_id }}{% if callout_details_vm.member_id is not null %}&member_id={{ callout_details_vm.member_id }}{% endif %}&{{ gvm.RR_JWT_TOKEN_PARAM|raw }}" 
                                     method="POST" 
-                                    onsubmit="return confirmAppendGeoCoordinates('Confirm that {{ row_no.user_id }} status should be '+$( '#ui_call_set_response_status_me{{ row_no.id }} option:selected' ).text()+'?',document.getElementById('call_no_response_me{{ row_no.id }}'));">
+                                    onsubmit="return confirmAppendGeoCoordinates('تأیید کنید {{ row_no.user_id }} باید به وضعیت '+$( '#ui_call_set_response_status_me{{ row_no.id }} option:selected' ).text()+'؟',document.getElementById('call_no_response_me{{ row_no.id }}'));">
                                 </form>
                             </td>
                         </tr>
@@ -155,12 +149,12 @@
                 
             <table cellpadding="2" border="1" width="100%">
                 <tr>
-                    <td><span class="ci_responders_header">Responder</span></td>
+                    <td><span class="ci_responders_header">پاسخ‌دهنده</span></td>
                     {% if gvm.isMobile %}
-                    <td width="40%" colspan="2"><span class="ci_responders_header">Status</span></td>
+                    <td width="40%" colspan="2"><span class="ci_responders_header">وضعیت</span></td>
                     <!--  <td><span class="ci_responders_header">Response Time</span></td> -->
                     {% else %}
-                    <td><span class="ci_responders_header">Status</span></td>
+                    <td><span class="ci_responders_header">وضعیت</span></td>
                     <td><span class="ci_responders_header">Response Time</span></td>
                     {% endif %}
                     <td><span class="ci_responders_header">ETA</span></td>
@@ -170,7 +164,7 @@
                 <tr>
                     <td>
                     {% if row_responding.latitude is defined and row_responding.latitude != 0.0 and row_responding.longitude is defined and row_responding.longitude != 0.0 %}
-                        <span class=ci_responders_members><a target="_blank" href="https://maps.google.com/maps?saddr={{ row_responding.responder_location }}&daddr={{ row_responding.firehall_location }} ({{ row_responding.firehall_location }})">{{ row_responding.user_id|upper }}</a></span>
+                        <span class=ci_responders_members><a target="_blank" href="https://neshan.org/maps/@{{ row_responding.responder_location }},15z">{{ row_responding.user_id|upper }}</a></span>
                     {% else %}
                         <span class="ci_responders_members">{{ row_responding.user_id|upper }}</span>
                     {% endif %}
@@ -206,7 +200,7 @@
                             $(this).data('lastValue',$(this).val());                
                         });
                         $('#ui_call_update_response_status{{ row_responding.id }}').change(function() {
-                            if (!updateResponderStatus('{{ row_responding.user_id }}', {{ row_responding.id }})) {
+                            if (!updateپاسخ‌دهندهوضعیت('{{ row_responding.user_id }}', {{ row_responding.id }})) {
                                 $(this).val($.data(this, 'lastValue'));
                                 return false;
                             }     
@@ -251,18 +245,19 @@
     <!-- Tab content -->
     <div id="Map" class="tabcontent">
 
-    <script type="text/javascript">            
-    var callout_geo_dest = '{{ row.callout_geo_dest }}';
-    </script>
-            {% block callout_js_inline_map %}
-                {% include ['@custom/google-map-js-api-custom.twig.html', 'google-map-js-api.twig.html'] with 
-                    { 'CALLORIGIN' : row.callout_geo_dest, 
-                    'DESTINATION' : row.callout_address_dest,
-                    'FDLOCATION' : callout_details_vm.firehall.WEBSITE.FIREHALL_GEO_COORD_LATITUDE ~ ',' ~ 
-                                    callout_details_vm.firehall.WEBSITE.FIREHALL_GEO_COORD_LONGITUDE,
-                    'WEB_ROOT' : callout_details_vm.firehall.WEBSITE.WEBSITE_ROOT_URL }
-                %}
-            {% endblock %}
+            <div class="ci_map_container">
+                <iframe id="neshan-map-frame"
+                        title="Neshan Map"
+                        width="100%"
+                        height="550"
+                        style="border:0;"
+                        loading="lazy"></iframe>
+            </div>
+            <script type="text/javascript">
+                var callout_geo_dest = '{{ row.callout_geo_dest }}';
+                var callout_address_dest = '{{ row.callout_address_dest }}';
+                document.getElementById('neshan-map-frame').src = buildNeshanMapUrl(callout_geo_dest, callout_address_dest);
+            </script>
 
             {% if callout_details_vm.calloutkey_id is defined and 
                     callout_details_vm.calloutkey_id != null and 
@@ -287,7 +282,7 @@
     <!-- End Tab content -->
     </div>
     <!-- Tab content -->
-    <div id="UnknownResponders" class="tabcontent">
+    <div id="Unknownپاسخ‌دهندهs" class="tabcontent">
 
                 {% if gvm.isMobile %}
                 <table width="{{ gvm.JSMAP_MOBILEWIDTH }}" align="center">
@@ -310,14 +305,14 @@
                             <span class='inset-button'>{{ row_no.user_id }}</span>
                         </td>
                         <td class="ci_align_cell" colspan="2">
-                            <INPUT TYPE="button" VALUE="Send" 
+                            <INPUT TYPE="button" VALUE="ارسال" 
                                     class="ci_respondnow_update" 
                                     onclick="$('#call_no_response_{{ row_no.id }}').attr('action','{{ gvm.RR_DOC_ROOT }}/cr/fhid={{ callout_details_vm.firehall_id }}&cid={{ callout_details_vm.callout_id }}&uid={{ row_no.user_id }}&ckid={{ callout_details_vm.calloutkey_id }}{% if callout_details_vm.member_id is not null %}&member_id={{ callout_details_vm.member_id }}{% endif %}&status='+$( '#ui_call_set_response_status{{ row_no.id }}' ).val()+'&{{ gvm.RR_JWT_TOKEN_PARAM|raw }}');
-                                    if(confirmAppendGeoCoordinates('Confirm that {{ row_no.user_id }} status should be '+$( '#ui_call_set_response_status{{ row_no.id }} option:selected' ).text()+'?',document.getElementById('call_no_response_{{ row_no.id }}'))) document.getElementById('call_no_response_{{ row_no.id }}').submit();"/>
+                                    if(confirmAppendGeoCoordinates('تأیید کنید {{ row_no.user_id }} باید به وضعیت '+$( '#ui_call_set_response_status{{ row_no.id }} option:selected' ).text()+'؟',document.getElementById('call_no_response_{{ row_no.id }}'))) document.getElementById('call_no_response_{{ row_no.id }}').submit();"/>
 
                             <select id="ui_call_set_response_status{{ row_no.id }}" class="ci_respondnow"
                                     onchange="$('#call_no_response_{{ row_no.id }}').attr('action','{{ gvm.RR_DOC_ROOT }}/cr/fhid={{ callout_details_vm.firehall_id }}&cid={{ callout_details_vm.callout_id }}&uid={{ row_no.user_id }}&ckid={{ callout_details_vm.calloutkey_id }}{% if callout_details_vm.member_id is not null %}&member_id={{ callout_details_vm.member_id }}{% endif %}&status='+$( '#ui_call_set_response_status{{ row_no.id }}' ).val()+'&{{ gvm.RR_JWT_TOKEN_PARAM|raw }}');
-                                                if(confirmAppendGeoCoordinates('Confirm that {{ row_no.user_id }} status should be '+$( '#ui_call_set_response_status{{ row_no.id }} option:selected' ).text()+'?',document.getElementById('call_no_response_{{ row_no.id }}'))) document.getElementById('call_no_response_{{ row_no.id }}').submit();">
+                                                if(confirmAppendGeoCoordinates('تأیید کنید {{ row_no.user_id }} باید به وضعیت '+$( '#ui_call_set_response_status{{ row_no.id }} option:selected' ).text()+'؟',document.getElementById('call_no_response_{{ row_no.id }}'))) document.getElementById('call_no_response_{{ row_no.id }}').submit();">
 
                                 {% for status_def in callout_details_vm.callout_status_defs %}
                                     {% if status_def.hasAccess(callout_details_vm.getMemberAccessValue(row_no.user_id)) and 
@@ -332,7 +327,7 @@
                             <form id="call_no_response_{{ row_no.id }}" 
                                 action="{{ gvm.RR_DOC_ROOT }}/cr/fhid={{ callout_details_vm.firehall_id }}&cid={{ callout_details_vm.callout_id }}&uid={{ row_no.user_id }}&ckid={{ callout_details_vm.calloutkey_id }}{% if callout_details_vm.member_id is not null %}&member_id={{ callout_details_vm.member_id }}{% endif %}&{{ gvm.RR_JWT_TOKEN_PARAM|raw }}" 
                                 method="POST" 
-                                onsubmit="return confirmAppendGeoCoordinates('Confirm that {{ row_no.user_id }} status should be '+$( '#ui_call_set_response_status{{ row_no.id }} option:selected' ).text()+'?',document.getElementById('call_no_response_{{ row_no.id }}'));">
+                                onsubmit="return confirmAppendGeoCoordinates('تأیید کنید {{ row_no.user_id }} باید به وضعیت '+$( '#ui_call_set_response_status{{ row_no.id }} option:selected' ).text()+'؟',document.getElementById('call_no_response_{{ row_no.id }}'));">
                             </form>
                         </td>
                         </tr>
@@ -359,26 +354,26 @@
                             <td class="ci_align_cell">
                                 <INPUT TYPE="button" VALUE="Complete the call" 
                                     class="ci_completenow" 
-                                    onclick="if(confirmAppendGeoCoordinates('COMPLETE this call?\nConfirm that the call should be set to COMPLETE?',document.getElementById('call_yes_response_complete_{{ row_yes.id }}'))) document.getElementById('call_yes_response_complete_{{ row_yes.id }}').submit();" />
+                                    onclick="if(confirmAppendGeoCoordinates('اتمام حادثه؟\nتأیید کنید the call should be set to COMPLETE؟',document.getElementById('call_yes_response_complete_{{ row_yes.id }}'))) document.getElementById('call_yes_response_complete_{{ row_yes.id }}').submit();" />
                             
                                 <form id="call_yes_response_complete_{{ row_yes.id }}" 
                                     action="{{ gvm.RR_DOC_ROOT }}/cr/fhid={{ callout_details_vm.firehall_id }}&cid={{ callout_details_vm.callout_id }}&uid={{ row_yes.user_id }}&ckid={{ callout_details_vm.calloutkey_id }}{% if callout_details_vm.member_id is not null %}&member_id={{ callout_details_vm.member_id }}{% endif %}&status={{ callout_details_vm.callout_status_complete }}&{{ gvm.RR_JWT_TOKEN_PARAM|raw }}" 
                                     method="POST" 
-                                    onsubmit="return confirmAppendGeoCoordinates('COMPLETE this call?\nConfirm that the call should be set to COMPLETE?',document.getElementById('call_yes_response_complete_{{ row_yes.id }}'));">
+                                    onsubmit="return confirmAppendGeoCoordinates('اتمام حادثه؟\nتأیید کنید the call should be set to COMPLETE؟',document.getElementById('call_yes_response_complete_{{ row_yes.id }}'));">
                                 </form>
                             </td>
                             {% endblock %}
 
                             {% block callout_yes_response_cancel %}
                             <td>
-                                <INPUT TYPE="button" VALUE="Cancel the call" 
+                                <INPUT TYPE="button" VALUE="لغو حادثه" 
                                     class="ci_cancelnow" 
-                                    onclick="if(confirmAppendGeoCoordinates('CANCEL this call?\nConfirm that the call should be CANCELLED?',document.getElementById('call_yes_response_cancel_{{ row_yes.id }}'))) document.getElementById('call_yes_response_cancel_{{ row_yes.id }}').submit();" />
+                                    onclick="if(confirmAppendGeoCoordinates('لغو حادثه؟\nتأیید کنید the call should be CANCELLED؟',document.getElementById('call_yes_response_cancel_{{ row_yes.id }}'))) document.getElementById('call_yes_response_cancel_{{ row_yes.id }}').submit();" />
                             
                                 <form id="call_yes_response_cancel_{{ row_yes.id }}" 
                                 action="{{ gvm.RR_DOC_ROOT }}/cr/fhid={{ callout_details_vm.firehall_id }}&cid={{ callout_details_vm.callout_id }}&uid={{ row_yes.user_id }}&ckid={{ callout_details_vm.calloutkey_id }}{% if callout_details_vm.member_id is not null %}&member_id={{ callout_details_vm.member_id }}{% endif %}&status={{ callout_details_vm.callout_status_cancel }}&{{ gvm.RR_JWT_TOKEN_PARAM|raw }}" 
                                 method="POST" 
-                                onsubmit="return confirmAppendGeoCoordinates('CANCEL this call?\nConfirm that the call should be CANCELLED?',document.getElementById('call_yes_response_cancel_{{ row_yes.id }}'));">
+                                onsubmit="return confirmAppendGeoCoordinates('لغو حادثه؟\nتأیید کنید the call should be CANCELLED؟',document.getElementById('call_yes_response_cancel_{{ row_yes.id }}'));">
                                 </form>
                             </td>
                             </tr>
@@ -397,170 +392,6 @@
     </div>
 
 <script type="text/javascript">
-
-function mapTilesLoaded(map) {
-    var defaultTab = getURLParameterByName('defaultTab');
-    if(defaultTab != null && defaultTab != '') {
-        document.getElementById(defaultTab).click();    
-    }
-    else {
-        document.getElementById("tabResponders").click();
-    }
-}
-
-function getGEOLocationCoords_callback_fn(geoAccess,param2) {
-    //alert('In getGEOLocationCoords_callback_fn' + geoAccess);
-    //alert(param2);
-    console.info('In getGEOLocationCoords_callback_fn: access = ' + geoAccess);
-    if(geoAccess && typeof callout_geo_dest != 'undefined') {
-        //debugger
-        $( '#geo_tag' ).html( 'Your geo: ' + (param2 != null && param2.lat != null ? param2.lat.toFixed(5) : '') + ", " + (param2 != null && param2.lng != null ? param2.lng.toFixed(5) : '') );
-        console.info('You: ' + (param2 != null && param2.lat != null ? param2.lat.toFixed(5) : '') + '', ',' + (param2 != null && param2.lng != null ? param2.lng.toFixed(5) : '') + 
-                      ' dest: ' + (callout_geo_dest != null ? callout_geo_dest : ''));
-        
-        //debugger;
-        var origin = new google.maps.LatLng( param2.lat, param2.lng );
-        var destination = callout_geo_dest; // using string
-
-        var directionsService = new google.maps.DirectionsService();
-        var request = {
-            origin: origin, // LatLng|string
-            destination: destination, // LatLng|string
-            travelMode: google.maps.DirectionsTravelMode.DRIVING
-        };
-
-        directionsService.route( request, function( response, status ) {
-            if ( status === 'OK' ) {
-                var point = response.routes[ 0 ].legs[ 0 ];
-                $( '#geo_tag' ).html( point.duration.text + ' (' + point.distance.text + ')' + ' - geo: ' + (param2 != null && param2.lat != null ? param2.lat.toFixed(5) : '') + ", " + (param2 != null && param2.lng != null ? param2.lng.toFixed(5) : ''));
-                console.info('Estimated time to scene: ' + point.duration.text + ' (' + point.distance.text + ')');
-            }
-        } );            
-    }
-}
-
-function getGEOLocationCoords_initialize(map) {
-    getGEOLocationCoords(getGEOLocationCoords_callback_fn);
-    setResponderETAs(map);
-}
-// https://maps.googleapis.com/maps/api/js?v=3.exp&key={{ callout_details_vm.firehall.WEBSITE.WEBSITE_GOOGLE_MAP_API_KEY }}&alternatives=true&callback=map_initialize    
-
-function setResponderETAs(map) {
-    console.info('In setResponderETAs() START');
-    //debugger;
-    var firehall_geo = '{{ callout_details_vm.firehall.WEBSITE.FIREHALL_GEO_COORD_LATITUDE }},{{ callout_details_vm.firehall.WEBSITE.FIREHALL_GEO_COORD_LONGITUDE }}';
-    var responder_count = {{ callout_details_vm.callout_details_responding_list|length }};    
-    for(index = 1; index <= responder_count; ++index) {
-        try {
-            var callout_geo_src = $( '#responder_geo_'+index).attr('value');
-            if(typeof callout_geo_src != 'undefined' && typeof callout_geo_dest != 'undefined') {
-                $( '#responder_eta_' + index ).html( 'calculating...' );
-                console.info('You: ' + callout_geo_src + " dest: " + callout_geo_dest);
-                
-                var origin = callout_geo_src;
-                var destination = callout_geo_dest; // using string
-                var callout_status_src = $( '#responder_status_'+index).attr('value');
-
-                //debugger;
-                var geo_check = callout_geo_src.split(",");
-                if(geo_check == null || (geo_check.length == 2 && 
-                    parseFloat(geo_check[0]) == 0.0 && parseFloat(geo_check[1]) == 0.0)) {
-                    console.info('Skip geo route in setResponderETAs() for index: ' + index);
-                    $( '#responder_eta_' + index ).html( 'unknown' );
-                    continue;
-                }
-                
-                // Responding to hall
-                if(callout_status_src == '2') {
-                    destination = firehall_geo;
-                }
-                // Not responding
-                if(callout_status_src == '4') {
-                    continue
-                }
-
-                //debugger;
-                var directionsService = new google.maps.DirectionsService();
-                var request = {
-                    origin: origin, // LatLng|string
-                    destination: destination, // LatLng|string
-                    travelMode: google.maps.DirectionsTravelMode.DRIVING
-                };
-    
-                calculateRoute(directionsService, request, index, callout_geo_src, map);
-            }
-        }
-        catch(ex) {
-            console.info('ERROR In setResponderETAs() for index: ' + index + ' error: ' + ex.message);
-        }
-    }
-}
-
-function addResponderToMap(responder_name, responder_geo, map) {
-    console.info('In addResponderToMap() START');
-    try {
-        // Create and place markers for Responders
-        //debugger;
-        var latlng = responder_geo.split(',')
-        var infowindow = new google.maps.InfoWindow();
-        var marker = new google.maps.Marker({
-            position: new google.maps.LatLng(parseFloat(latlng[0]),parseFloat(latlng[1])),
-            title: "Responder: " + responder_name,
-            clickable: true,
-            icon: '{{ gvm.RR_DOC_ROOT }}/images/icons/respond_to_hall.png',
-            map: map
-        });
-        
-        google.maps.event.addListener(marker, 'click', (function(marker, responder_name) {
-            return function() {
-                infowindow.setContent(responder_name);
-                infowindow.open(map, marker);
-            }
-        })
-        (marker, responder_name));
-        
-        marker.setMap(map);
-    }
-    catch(ex) {
-        console.info('ERROR In addResponderToMap() for responder_name: ' + responder_name + ' error: ' + ex.message);
-    }
-}
-
-function calculateRoute(directionsService,request,index, callout_geo_src, map) {
-    directionsService.route( request, function( response, status ) {
-        //debugger;
-        if ( status === 'OK' ) {
-            var point = response.routes[ 0 ].legs[ 0 ];
-            $( '#responder_eta_' + index ).html( point.duration.text + ' (' + point.distance.text + ')' );
-            console.info('*SUCCESS* index: ' + index + ' callout_geo_src: ' + callout_geo_src + ' Estimated time to scene: ' + point.duration.text + ' (' + point.distance.text + ')');
-            
-            addResponderToMap($( '#responder_name_'+index).attr('value'), callout_geo_src, map);
-        }
-        else {
-            $( '#responder_eta_' + index ).html( 'unknown' );
-            console.info('*FAILED* index: ' + index + ' callout_geo_src: ' + callout_geo_src + ' Estimated time to scene unknown response code: ' + status);
-            
-            // === if we were sending the requests to fast, try this one again and increase the delay
-            if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
-                try {
-                    //calculateRoute(directionsService,request,index, callout_geo_src, map);
-                    //setTimeout('getAddress("'+addresses[nextAddress]+'",theNext)', 100);
-                    //setTimeout('calculateRoute(directionsService,request,index, callout_geo_src, map)', 100);
-                    setTimeout(function() {
-                        calculateRoute(directionsService,request,index, callout_geo_src, map);
-                    }, 500*index);
-                }
-                catch(ex) {
-                    console.info('ERROR In calculateRoute() for index: ' + index + ' error: ' + ex.message);
-                }
-            }
-            else {
-                addResponderToMap($( '#responder_name_'+index).attr('value'), callout_geo_src, map);
-            }
-        }
-    });
-}
-
 var startTime = null;
 var elapsedReload = 0;
 var lastReloadError = '';

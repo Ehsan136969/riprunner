@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Secure Login: Log In</title>
+        <title>ورود به سامانه مرکز پیام آتش‌نشانی خوی</title>
         {% if gvm.isMobile %}
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/mobile.css" />
         {% else %}
@@ -19,21 +19,21 @@
     	<div class="container_center">
 	{% if gvm.auth.isAuth %}
     	{% if gvm.isMobile %} 
-        <b>Mobile Device Detected</b> 
+        <b>دستگاه همراه شناسایی شد</b> 
     	{% elseif gvm.isTablet %} 
-        <b>Tablet Device Detected</b> 
+        <b>تبلت شناسایی شد</b> 
         {% else %} 
-        <b>Desktop Device Detected</b> 
+        <b>رایانه شناسایی شد</b> 
         {% endif %}
     	
         {% if twofaenablevm.hasError %}
-        <p class="error">Error Enabling Two factor authentication!</p>
+        <p class="error">خطا در فعال‌سازی احراز هویت دومرحله‌ای!</p>
         {% else %}
 		<div class="container">
 			<section id="content2fa">
 	        <form action="{{ gvm.RR_DOC_ROOT }}/controllers/2fa-enable-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}" method="post" 
 	               accept-charset="utf-8" id="login_form" name="login_form">
-	        	<h1>Two-Factor Authentication</h1>
+	        	<h1>احراز هویت دومرحله‌ای</h1>
 				{% include 'display-logo.twig.html' %}
 				
 				{% if twofa_enable_ctl_action_error == constant('riprunner\\TwoFAResultType::NONE') or
@@ -44,7 +44,7 @@
 				{% if twofa_enable_ctl_action_error != constant('riprunner\\TwoFAResultType::TOPT_REMOVE') and
 					  twofa_enable_ctl_action_error != constant('riprunner\\TwoFAResultType::INVALID_TOPT_REMOVE') %}
 			    <div>
-	            	<h3 style='color:black'>Please use an authenticator app (like Google or Yubico Authenticator) to scan this QR Code:</h3>
+	            	<h3 style='color:black'>لطفاً با یک برنامه احراز هویت (مانند Google Authenticator یا Yubico) این کد QR را اسکن کنید:</h3>
 				</div>
 				<br>
 				<hr>
@@ -65,7 +65,7 @@
 				<hr>
 				<br>
 			    <div>
-	            	<h3 style='color:black'>Or enter this code into your authentication app:</h3>
+	            	<h3 style='color:black'>یا این کد را در برنامه احراز هویت وارد کنید:</h3>
 				</div>
 			    <div>
 	            	<h3 style='color:blue'>{{ twofaenablevm.otp_secret }}</h3>
@@ -77,24 +77,24 @@
 			    <div>
 					{% if twofa_enable_ctl_action_error == constant('riprunner\\TwoFAResultType::TOPT_REMOVE') or
 						  twofa_enable_ctl_action_error == constant('riprunner\\TwoFAResultType::INVALID_TOPT_REMOVE') %}
-					<h3 style='color:black'><label for="twofa_key_verify">Please enter your current authentication app 2FA code to verify REMOVAL</label></h3>	  
+					<h3 style='color:black'><label for="twofa_key_verify">برای تأیید حذف، کد فعلی برنامه احراز هویت را وارد کنید</label></h3>	  
 					{% else %}
-					<h3 style='color:black'><label for="twofa_key_verify">Please enter the current authentication app 2FA code for verification</label></h3>
+					<h3 style='color:black'><label for="twofa_key_verify">برای تأیید، کد فعلی برنامه احراز هویت را وارد کنید</label></h3>
 					{% endif %}	
 	            	<input type="text" name="twofa_key_verify" id="twofa_key_verify" 
-	            	       placeholder="Two factor code" required 
-	            		   onKeyPress="return submitenter(this,event,document.getElementById('btnVerify').onclick);" />
+	            	       placeholder="کد تأیید دومرحله‌ای" required 
+	            		   onKeyPress="return submitenter(this,event,document.getElementById('btnConfirm').onclick);" />
 				</div>
 				{% endif %}
 				<div>
 				<center>
 					{% if twofa_enable_ctl_action_error == constant('riprunner\\TwoFAResultType::INVALID_TOPT') or 
 					      twofa_enable_ctl_action_error == constant('riprunner\\TwoFAResultType::INVALID_TOPT_REMOVE') %}
-					<b><font color="red">Invalid Two factor code! Please try again.</font></b>
+					<b><font color="red">کد دومرحله‌ای نامعتبر است. دوباره تلاش کنید.</font></b>
 					{% elseif twofa_enable_ctl_action_error == constant('riprunner\\TwoFAResultType::TOPT_ENABLED') %}
-					<b><font color="green">Two factor authentication has been ENABLED for user: {{ twofaenablevm.user_id }}</font></b>
+					<b><font color="green">احراز هویت دومرحله‌ای برای کاربر {{ twofaenablevm.user_id }} فعال شد.</font></b>
 					{% elseif twofa_enable_ctl_action_error == constant('riprunner\\TwoFAResultType::TOPT_DISABLED') %}
-					<b><font color="blue">Two factor authentication has been DISABLED for user: {{ twofaenablevm.user_id }}</font></b>
+					<b><font color="blue">احراز هویت دومرحله‌ای برای کاربر {{ twofaenablevm.user_id }} غیرفعال شد.</font></b>
 					{% endif %}
 				</center>
 				</div>
@@ -103,14 +103,14 @@
 						  twofa_enable_ctl_action_error == constant('riprunner\\TwoFAResultType::TOPT_REMOVE') or
 						  twofa_enable_ctl_action_error == constant('riprunner\\TwoFAResultType::INVALID_TOPT') or
 						  twofa_enable_ctl_action_error == constant('riprunner\\TwoFAResultType::INVALID_TOPT_REMOVE') %}
-	            	<input type="button" id="btnCancel" class="close" value="Cancel"  onclick="self.close()" />
-	            	<input type="button" id="btnVerify" 
-	                		value="Verify" 
+	            	<input type="button" id="btnCancel" class="close" value="انصراف"  onclick="self.close()" />
+	            	<input type="button" id="btnConfirm" 
+	                		value="تأیید" 
 							   onclick="save_secret(document.getElementById('login_form'), '{{ twofaenablevm.user_id }}', 
 							                               '{{ twofaenablevm.firehall_id }}') && 
 											   formhash(document.getElementById('login_form'), '{{ twofaenablevm.otp_secret }}', true); return false;" />
 					{% else %}
-	            	<input type="button" id="btnCancel" class="close" value="Close" onclick="self.close()" />
+	            	<input type="button" id="btnCancel" class="close" value="بستن" onclick="self.close()" />
 					{% endif %}
 				</div>
 				<script type="text/javascript">
@@ -137,9 +137,9 @@
 			</section>
 			</div>
 	        
-	        <p>If you are done browsing, please <a href="{{ gvm.RR_DOC_ROOT }}/logout.php">log out</a>.</p>
+	        <p>اگر کار شما تمام شده است، <a href="{{ gvm.RR_DOC_ROOT }}/logout.php">از سامانه خارج شوید</a>.</p>
 	        
-			<p>You are currently logged {{ gvm.auth.isAuth ? 'in' : 'out' }}.</p>
+			<p>وضعیت ورود: {{ gvm.auth.isAuth ? 'وارد شده' : 'خارج شده' }}.</p>
 			
 			{{ twofa_enable_ctl_class.forceLogoffIfRequired() }}
 			

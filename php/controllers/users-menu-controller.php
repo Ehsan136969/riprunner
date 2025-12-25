@@ -26,6 +26,12 @@ use PHPMailer\PHPMailer\Exception;
 Authentication::setJWTCookie();
 Authentication::sec_session_start();
 new LiveCalloutWarningViewModel($global_vm, $view_template_vars);
+$self_edit = get_query_param('se');
+$self_edit = (isset($self_edit) === true && $self_edit != null && $self_edit == true);
+if ($global_vm->auth->isAdmin != true && $self_edit !== true) {
+	header('Location: '.$global_vm->RR_DOC_ROOT.'/controllers/callout-history-controller.php?'.$global_vm->RR_JWT_TOKEN_PARAM);
+	exit;
+}
 $usersmenu_mv = new UsersMenuViewModel($global_vm, $view_template_vars);
 new UsersMenuController($global_vm, $usersmenu_mv, $view_template_vars);
 

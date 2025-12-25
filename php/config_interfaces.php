@@ -344,6 +344,13 @@ class FireHallSMS
 	// The API FROM mobile phone # to use for twilio
 	public $SMS_PROVIDER_TWILIO_FROM;
 
+	// The Base API URL for sending SMS messages using kavenegar.com
+	public $SMS_PROVIDER_KAVENEGAR_BASE_URL;
+	// The API key to use for kavenegar
+	public $SMS_PROVIDER_KAVENEGAR_API_KEY;
+	// The API FROM mobile phone # to use for kavenegar
+	public $SMS_PROVIDER_KAVENEGAR_FROM;
+
 	// The Base API URL for sending SMS messages using plivo.com
 	public $SMS_PROVIDER_PLIVO_BASE_URL;
 	// The API authentication id to use for plivo
@@ -389,6 +396,10 @@ class FireHallSMS
 		$this->SMS_PROVIDER_TWILIO_BASE_URL = $twilio_base_url;
 		$this->SMS_PROVIDER_TWILIO_AUTH_TOKEN = $twilio_auth_token;
 		$this->SMS_PROVIDER_TWILIO_FROM = $twilio_from;
+
+		$this->SMS_PROVIDER_KAVENEGAR_BASE_URL = null;
+		$this->SMS_PROVIDER_KAVENEGAR_API_KEY = null;
+		$this->SMS_PROVIDER_KAVENEGAR_FROM = null;
 		
 		$this->SMS_PROVIDER_PLIVO_BASE_URL = null;
 		$this->SMS_PROVIDER_PLIVO_AUTH_ID = null;
@@ -424,6 +435,8 @@ class FireHallSMS
 				"\nTwilio url: " . $this->SMS_PROVIDER_TWILIO_BASE_URL .
 				//"\nTwilio auth token: " . $this->SMS_PROVIDER_TWILIO_AUTH_TOKEN .
 				"\nTwilio from sms: " . $this->SMS_PROVIDER_TWILIO_FROM.
+				"\nKavenegar url: " . $this->SMS_PROVIDER_KAVENEGAR_BASE_URL .
+				"\nKavenegar from sms: " . $this->SMS_PROVIDER_KAVENEGAR_FROM .
 				"\nPlivo url: " . $this->SMS_PROVIDER_PLIVO_BASE_URL .
 				//"\nPlivo auth token: " . $this->SMS_PROVIDER_PLIVO_AUTH_TOKEN .
 				"\nPlivo from sms: " . $this->SMS_PROVIDER_PLIVO_FROM .
@@ -502,6 +515,16 @@ class FireHallSMS
 	}
 	public function setTwilioFromNumber($twilio_from) {
 		$this->SMS_PROVIDER_TWILIO_FROM = $twilio_from;
+	}
+
+	public function setKavenegarBaseURL($base_url) {
+	    $this->SMS_PROVIDER_KAVENEGAR_BASE_URL = $base_url;
+	}
+	public function setKavenegarApiKey($api_key) {
+	    $this->SMS_PROVIDER_KAVENEGAR_API_KEY = $api_key;
+	}
+	public function setKavenegarFromNumber($from) {
+	    $this->SMS_PROVIDER_KAVENEGAR_FROM = $from;
 	}
 	
 	public function setPlivoBaseURL($base_url) {

@@ -22,6 +22,10 @@ require_once __RIPRUNNER_ROOT__ . '/logging.php';
 \riprunner\Authentication::setJWTCookie();
 \riprunner\Authentication::sec_session_start();
 new LiveCalloutWarningViewModel($global_vm, $view_template_vars);
+if ($global_vm->auth->isAdmin != true && $global_vm->auth->isDispatcher != true) {
+	header('Location: '.$global_vm->RR_DOC_ROOT.'/controllers/login-controller.php');
+	exit;
+}
 new CalloutHistoryViewModel($global_vm, $view_template_vars);
 
 // Load out template

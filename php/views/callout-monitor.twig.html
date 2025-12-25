@@ -3,7 +3,7 @@
     <head>
     
         <meta charset="UTF-8">
-        <title>Secure Login: Protected Page</title>
+        <title>سامانه مرکز پیام آتش‌نشانی خوی</title>
         {% if gvm.isMobile %}
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/mobile.css" />
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/table-styles-mobile.css" />
@@ -149,20 +149,20 @@
           <nav class="vertical">
             <ul>
               <li>
-                <label for="main_page">Return to ..</label>
+                <label for="main_page">بازگشت به</label>
                 <input type="radio" name="verticalMenu" id="main_page" />
                 <div>
                   <ul>
-                    <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}" onclick="javascript:closeConnection(); return true;">Main Menu</a></li>
+                    <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}" onclick="javascript:closeConnection(); return true;">منوی اصلی</a></li>
                   </ul>
                 </div>
               </li>
               <li>
-                <label for="logout">Exit</label>
+                <label for="logout">خروج</label>
                 <input type="radio" name="verticalMenu" id="logout" />
                 <div>
                   <ul>
-                    <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php" onclick="javascript:closeConnection(); return true;">Logout</a></li>
+                    <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php" onclick="javascript:closeConnection(); return true;">خروج از سامانه</a></li>
                   </ul>
                 </div>
               </li>
@@ -278,7 +278,7 @@ function closeConnection() {
   source.close();
   logger.log('> Connection was closed at: ' + new Date().toLocaleString());
   console.info('> Connection was closed at: ' + new Date().toLocaleString());
-  updateConnectionStatus('Disconnected', false);
+  updateConnectionStatus('قطع ارتباط', false);
 }
 function updateConnectionStatus(msg, connected) {
 	try {
@@ -344,14 +344,14 @@ source.addEventListener('open', function(event) {
 	console.info('Connection was opened at: ' + new Date().toLocaleString());
 	logger.clear();
     logger.log('> Connection was opened at: ' + new Date().toLocaleString());
-    updateConnectionStatus('Connected', true);
+    updateConnectionStatus('متصل', true);
 }, false);
 
 source.addEventListener('error', function(event) {
     if (event.eventPhase == 2) { //EventSource.CLOSED
     	console.info('Connection was closed at: ' + new Date().toLocaleString());
       logger.log('> Connection was closed (2) at: ' + new Date().toLocaleString());
-      updateConnectionStatus('Disconnected', false);
+      updateConnectionStatus('قطع ارتباط', false);
     }
     else {
     	console.info('Connection error: ' + event.eventPhase + 'at: ' + new Date().toLocaleString());

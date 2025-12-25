@@ -22,6 +22,10 @@ require_once __RIPRUNNER_ROOT__ . '/logging.php';
 \riprunner\Authentication::setJWTCookie();
 \riprunner\Authentication::sec_session_start();
 new LiveCalloutWarningViewModel($global_vm, $view_template_vars);
+if ($global_vm->auth->isAdmin != true) {
+	header('Location: '.$global_vm->RR_DOC_ROOT.'/controllers/callout-history-controller.php?'.$global_vm->RR_JWT_TOKEN_PARAM);
+	exit;
+}
 $addressoverride_mv = new AddressOverrideViewModel($global_vm, $view_template_vars);
 new AddressOverrideMenuController($global_vm, $addressoverride_mv, $view_template_vars);
 

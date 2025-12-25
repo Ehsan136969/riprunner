@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Secure Login: Log In</title>
+        <title>ورود به سامانه مرکز پیام آتش‌نشانی خوی</title>
         {% if gvm.isMobile %}
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/mobile.css" />
         {% else %}
@@ -17,32 +17,32 @@
     
     	<div class="container_center">
     	{% if gvm.isMobile %} 
-        <b>Mobile Device Detected</b> 
+        <b>دستگاه همراه شناسایی شد</b> 
     	{% elseif gvm.isTablet %} 
-        <b>Tablet Device Detected</b> 
+        <b>تبلت شناسایی شد</b> 
         {% else %} 
-        <b>Desktop Device Detected</b> 
+        <b>رایانه شناسایی شد</b> 
         {% endif %}
     	
         {% if twofavm.hasError %}
-        <p class="error">Error Logging In!</p>
+        <p class="error">خطا در ورود!</p>
         {% else %}
 		<div class="container">
 			<section id="content">
 	        <form action="{{ gvm.RR_DOC_ROOT }}/process_login.php?{{ gvm.RR_JWT_TOKEN_PARAM }}" method="post" 
 	               accept-charset="utf-8" id="login_form" name="login_form">
-	        	<h1>Login User</h1>
+	        	<h1>ورود به سامانه</h1>
 	        	{% include 'display-logo.twig.html' %}
 	        	
 			    <div>
-	            	<label for="twofa_key">Please enter the code you received</label>
+	            	<label for="twofa_key">کد دریافتی را وارد کنید</label>
 	            	<input type="text" name="twofa_key" id="twofa_key" 
-	            	       placeholder="Two factor code" required 
+	            	       placeholder="کد دومرحله‌ای" required 
 	            		   onKeyPress="return submitenter(this,event,document.getElementById('btnLogin').onclick);" />
 				</div>
 				<div >
 	            	<input type="button" id="btnLogin" 
-	                		value="Next" 
+	                		value="ادامه" 
 	                   		onclick="return formhash(document.getElementById('login_form'), document.getElementById('twofa_key'), true);" />
 	            </div>	
 	        </form>
@@ -50,9 +50,9 @@
 			</div>
 	
 	        {% if gvm.auth.isAuth %}
-	        <p>If you are done browsing, please <a href="{{ gvm.RR_DOC_ROOT }}/logout.php">log out</a>.</p>
+	        <p>اگر کار شما تمام شده است، <a href="{{ gvm.RR_DOC_ROOT }}/logout.php">از سامانه خارج شوید</a>.</p>
 	        {% endif %}
-	        <p>You are currently logged {{ gvm.auth.isAuth ? 'in' : 'out' }}.</p>
+	        <p>وضعیت ورود: {{ gvm.auth.isAuth ? 'وارد شده' : 'خارج شده' }}.</p>
         {% endif %}
         </div>
     </body>

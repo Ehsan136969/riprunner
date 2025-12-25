@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Secure Login: Protected Page</title>
+        <title>سامانه مرکز پیام آتش‌نشانی خوی</title>
         {% if gvm.isMobile %}
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/mobile.css" />
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/table-styles-mobile.css" />
@@ -32,20 +32,20 @@
               <nav class="vertical">
                 <ul>
                   <li>
-                    <label for="main_page">Return to ..</label>
+                    <label for="main_page">بازگشت به</label>
                     <input type="radio" name="verticalMenu" id="main_page" />
                     <div>
                       <ul>
-                        <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}">Main Menu</a></li>
+                        <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}">منوی اصلی</a></li>
                       </ul>
                     </div>
                   </li>
                   <li>
-                    <label for="logout">Exit</label>
+                    <label for="logout">خروج</label>
                     <input type="radio" name="verticalMenu" id="logout" />
                     <div>
                       <ul>
-                        <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php">Logout</a></li>
+                        <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php">خروج از سامانه</a></li>
                       </ul>
                     </div>
                   </li>
@@ -53,11 +53,11 @@
               </nav>
             </div>
 
-            <h2>Rip Runner Testing</h2>
+            <h2>تست سامانه ریپ‌رانر</h2>
             <div id="riprunner_config" style="font-size:20px; color: white; height: 400px; overflow: auto;border: 2px solid #555;">
             <center>
             
-            <button onclick="toggleVisibility('test_code');">Show/Hide Test Page</button>            
+            <button onclick="toggleVisibility('test_code');">نمایش/پنهان‌سازی صفحه تست</button>            
             <form action="{{ gvm.RR_DOC_ROOT }}/controllers/system-test-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM }}" 
                   method="post" id="test_code" name="test_code" 
                   style="display:{% if testmenu_ctl_action_code_test is not defined or 
@@ -66,12 +66,12 @@
                 <table id="box-table-a" style="width:500px; height:100px;">
                     <tr>
                         <td align="center" colspan="2">
-                        <span id="msgTitle">Create a Test Page</span>
+                        <span id="msgTitle">ایجاد صفحه تست</span>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <span id="title_callout_code">Callout Code:</span> 
+                            <span id="title_callout_code">کد حادثه:</span> 
  		                    <select id="callout_code" name="callout_code">
 		                    {% for callout_type in systemtest_vm.callout_type_list %}
 		                      <option value="{{ callout_type.code }}">{{ callout_type.name }}</option>
@@ -81,27 +81,27 @@
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <span id="title_callout_address">Address:</span>
+                            <span id="title_callout_address">آدرس:</span>
                             <input id="test_address" name="test_address" type="input" size="60" value=""/>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <span id="title_callout_geo_lat">Geo Coordinates Latitude:</span>
+                            <span id="title_callout_geo_lat">عرض جغرافیایی:</span>
                             <input id="test_geo_lat" name="test_geo_lat" type="input" size="18" value=""/>
-                            <span id="title_callout_geo_long"> Longitude:</span>
+                            <span id="title_callout_geo_long"> طول جغرافیایی:</span>
                             <input id="test_geo_long" name="test_geo_long" type="input" size="18" value=""/>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="2">
-                        <span id="title_callout_units">Units Responding:</span>
+                        <span id="title_callout_units">واحدهای پاسخ‌دهنده:</span>
                         <input id="test_units" name="test_units" type="input" size="52" value=""/>
                         </td>
                     </tr>
                     <tr>
                         <td align="center" colspan="2">
-                        <input type="button" value="Trigger Test Page" onclick="send_msg(this.form, 'code_test');" />
+                        <input type="button" value="اجرای صفحه تست" onclick="send_msg(this.form, 'code_test');" />
                         </td>
                     </tr>
                     <tr>

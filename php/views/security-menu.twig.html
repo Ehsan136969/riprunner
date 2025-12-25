@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Secure Login: Protected Page</title>
+        <title>سامانه مرکز پیام آتش‌نشانی خوی</title>
         {% if gvm.isMobile %}
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/mobile.css?version=1" />
         <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/table-styles-mobile.css" />
@@ -25,20 +25,20 @@
               <nav class="vertical">
                 <ul>
                   <li>
-                    <label for="main_page">Return to ..</label>
+                    <label for="main_page">بازگشت به</label>
                     <input type="radio" name="verticalMenu" id="main_page" />
                     <div>
                       <ul>
-                        <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM|raw }}">Main Menu</a></li>
+                        <li><a href="{{ gvm.RR_DOC_ROOT }}/controllers/main-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM|raw }}">منوی اصلی</a></li>
                       </ul>
                     </div>
                   </li>
                   <li>
-                    <label for="logout">Exit</label>
+                    <label for="logout">خروج</label>
                     <input type="radio" name="verticalMenu" id="logout" />
                     <div>
                       <ul>
-                        <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php">Logout</a></li>
+                        <li><a href="{{ gvm.RR_DOC_ROOT }}/logout.php">خروج از سامانه</a></li>
                       </ul>
                     </div>
                   </li>
@@ -46,7 +46,7 @@
               </nav>
             </div>
 
-            <h3>Recent Login Audit</h3>
+            <h3>ممیزی ورودهای اخیر</h3>
             <form action="{{ gvm.RR_DOC_ROOT }}/controllers/security-menu-controller.php?{{ gvm.RR_JWT_TOKEN_PARAM|raw }}" 
                   method="post" name="security_form">
    
@@ -55,13 +55,13 @@
             <table id="box-table-a">
                 <thead>
                     <tr>
-                    <th scope="col">Id</th>
-                    <th scope="col">User Name</th>
-                    <th scope="col">Audit Status</th>
-                    <th scope="col">User Agent</th>
-                    <th scope="col">IP Address</th>
-                    <th scope="col">GEO Location</th>
-                    <th scope="col">Date/Time</th>
+                    <th scope="col">شناسه</th>
+                    <th scope="col">نام کاربری</th>
+                    <th scope="col">وضعیت ممیزی</th>
+                    <th scope="col">مرورگر</th>
+                    <th scope="col">آی‌پی</th>
+                    <th scope="col">موقعیت جغرافیایی</th>
+                    <th scope="col">تاریخ/زمان</th>
                     <tr>
                 </thead>
 

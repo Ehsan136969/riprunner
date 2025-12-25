@@ -29,6 +29,33 @@ require_once 'functions.php';
 $argv = getopt(null, ["fhid::","form_action::","adminpwd::"]);
 var_dump($argv);
 
+function seed_user($db_connection, $firehall_id, $username, $password, $access) {
+    if(isset($username) === false || $username === null || $username === '') {
+        return false;
+    }
+    if(isset($password) === false || $password === null || $password === '') {
+        return false;
+    }
+    $sql = "SELECT id FROM user_accounts WHERE firehall_id = :fhid AND user_id = :user_id LIMIT 1";
+    $qry_bind = $db_connection->prepare($sql);
+    $qry_bind->bindParam(':fhid', $firehall_id);
+    $qry_bind->bindParam(':user_id', $username);
+    $qry_bind->execute();
+    $existing = $qry_bind->fetch(\PDO::FETCH_OBJ);
+    $qry_bind->closeCursor();
+    if($existing !== false && $existing !== null) {
+        return true;
+    }
+    $hashed_password = \riprunner\Authentication::encryptPassword($password);
+    $insert = "INSERT INTO user_accounts (firehall_id,user_id,user_pwd,access,active,twofa) VALUES (:fhid,:user_id,:pwd,:access,1,0)";
+    $insert_bind = $db_connection->prepare($insert);
+    $insert_bind->bindParam(':fhid', $firehall_id);
+    $insert_bind->bindParam(':user_id', $username);
+    $insert_bind->bindParam(':pwd', $hashed_password);
+    $insert_bind->bindParam(':access', $access);
+    return $insert_bind->execute();
+}
+
 function install($FIREHALL, &$db_connection, $argv) {
     $sql_statement = new \riprunner\SqlStatement($db_connection);
     $db_exist = $sql_statement->db_exists($FIREHALL->DB->DATABASE, null);
@@ -55,23 +82,37 @@ function install($FIREHALL, &$db_connection, $argv) {
 	    $schema_results = $sql_statement->installSchema();
 		echo 'SCHEMA Import Information, Success: ' . $schema_results["success"] . ' Total: ' . $schema_results["total"] . PHP_EOL;
 
-		$random_password = uniqid('', true);
-        $forced_pwd = $argv['adminpwd'];
-        if (isset($forced_pwd) === true) {
-            $random_password = $forced_pwd;
-        }
-		$new_pwd = \riprunner\Authentication::encryptPassword($random_password);
-		
-		$sql = $sql_statement->getSqlStatement('admin_user_create');
-		$qry_bind = $db_connection->prepare($sql);
-		$qry_bind->bindParam(':fhid', $FIREHALL->FIREHALL_ID);
-		$qry_bind->bindParam(':pwd', $new_pwd);
-		$qry_bind->execute();
-		
-		echo 'A default admin account has been created, with the following information:'.PHP_EOL.
-		     'Firehall Id: '.$FIREHALL->FIREHALL_ID.PHP_EOL.
-		     'User id: admin'.PHP_EOL.
-		     'Password: '.$random_password .PHP_EOL;
+		$seed_admin_username = getenv('SEED_ADMIN_USERNAME');
+		$seed_admin_password = getenv('SEED_ADMIN_PASSWORD');
+		$seed_dispatcher_username = getenv('SEED_DISPATCHER_USERNAME');
+		$seed_dispatcher_password = getenv('SEED_DISPATCHER_PASSWORD');
+		$forced_pwd = $argv['adminpwd'];
+
+		$admin_created = false;
+		if (!empty($seed_admin_username) && !empty($seed_admin_password)) {
+			$admin_created = seed_user($db_connection, $FIREHALL->FIREHALL_ID, $seed_admin_username, $seed_admin_password, USER_ACCESS_ADMIN);
+		}
+		else if (isset($forced_pwd) === true && $forced_pwd !== null && $forced_pwd !== '') {
+			$admin_created = seed_user($db_connection, $FIREHALL->FIREHALL_ID, 'admin', $forced_pwd, USER_ACCESS_ADMIN);
+		}
+
+		if ($admin_created === true) {
+			echo 'Admin account seed completed.'.PHP_EOL;
+		}
+		else {
+			echo 'Admin seed skipped: set SEED_ADMIN_USERNAME and SEED_ADMIN_PASSWORD.' . PHP_EOL;
+		}
+
+		$dispatcher_created = false;
+		if (!empty($seed_dispatcher_username) && !empty($seed_dispatcher_password)) {
+			$dispatcher_created = seed_user($db_connection, $FIREHALL->FIREHALL_ID, $seed_dispatcher_username, $seed_dispatcher_password, USER_ACCESS_DISPATCHER);
+		}
+		if ($dispatcher_created === true) {
+			echo 'Dispatcher account seed completed.' . PHP_EOL;
+		}
+		else {
+			echo 'Dispatcher seed skipped: set SEED_DISPATCHER_USERNAME and SEED_DISPATCHER_PASSWORD.' . PHP_EOL;
+		}
 	}
 }
 

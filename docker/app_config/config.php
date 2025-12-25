@@ -16,6 +16,10 @@ require_once 'config_constants.php';
 require_once 'config/config_manager.php';
 
 // ==============================================================
+	$timezone = getenv('TZ') ? getenv('TZ') : (getenv('APP_TZ') ? getenv('APP_TZ') : 'Asia/Tehran');
+	date_default_timezone_set($timezone);
+	ini_set('date.timezone', $timezone);
+
 define( 'JWT_KEY', getenv('APP_RIPRUNNER_CONFIG_JWT')   ? getenv('APP_RIPRUNNER_CONFIG_JWT') : 'ViCNJCnr_c6BAKXvpbsJ4nzfhXJAYhkjMSRgfUW6oE' );
 
 // Required for test automation to pass
@@ -26,9 +30,12 @@ define( 'JWT_KEY', getenv('APP_RIPRUNNER_CONFIG_JWT')   ? getenv('APP_RIPRUNNER_
 	define( 'DEFAULT_SMS_PROVIDER_EZTEXTING_BASE_URL', 	'https://app.eztexting.com/sending/messages?format=xml');
 	define( 'DEFAULT_SMS_PROVIDER_EZTEXTING_USERNAME', 	getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_EZTEXTING_USERNAME')   ? getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_EZTEXTING_USERNAME') : 'X');
 	define( 'DEFAULT_SMS_PROVIDER_EZTEXTING_PASSWORD', 	getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_EZTEXTING_PASSWORD')   ? getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_EZTEXTING_PASSWORD') : 'X');
-	define( 'DEFAULT_SMS_PROVIDER_TWILIO_BASE_URL', 	'https://api.twilio.com/xxxx-xx-xx/Accounts/X/Messages.xml');
-	define( 'DEFAULT_SMS_PROVIDER_TWILIO_AUTH_TOKEN', 	getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_TWILIO_BASE_URL')   ? getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_TWILIO_BASE_URL') : 'X:X');
+	define( 'DEFAULT_SMS_PROVIDER_TWILIO_BASE_URL', 	getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_TWILIO_BASE_URL')   ? getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_TWILIO_BASE_URL') : 'https://api.twilio.com/xxxx-xx-xx/Accounts/X/Messages.xml');
+	define( 'DEFAULT_SMS_PROVIDER_TWILIO_AUTH_TOKEN', 	getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_TWILIO_AUTH_TOKEN')   ? getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_TWILIO_AUTH_TOKEN') : 'X:X');
 	define( 'DEFAULT_SMS_PROVIDER_TWILIO_FROM', 		getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_TWILIO_FROM')   ? getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_TWILIO_FROM') : '+xxxxxxxxxx');
+	define( 'DEFAULT_SMS_PROVIDER_KAVENEGAR_BASE_URL', getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_KAVENEGAR_BASE_URL')   ? getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_KAVENEGAR_BASE_URL') : 'https://api.kavenegar.com/v1/');
+	define( 'DEFAULT_SMS_PROVIDER_KAVENEGAR_API_KEY', 	getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_KAVENEGAR_API_KEY')   ? getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_KAVENEGAR_API_KEY') : 'X');
+	define( 'DEFAULT_SMS_PROVIDER_KAVENEGAR_FROM', 	getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_KAVENEGAR_FROM')   ? getenv('APP_RIPRUNNER_CONFIG_DEFAULT_SMS_PROVIDER_KAVENEGAR_FROM') : '');
 
 	// ----------------------------------------------------------------------
 	// Mobile App Settings
@@ -238,10 +245,52 @@ $EMAIL_SETTINGS->setOutboundFromAddress(getenv('APP_EMAIL_OutboundFromAddress') 
 $EMAIL_SETTINGS->setOutboundFromName(getenv('APP_EMAIL_OutboundFromName') ? getenv('APP_EMAIL_OutboundFromName') : 'Rip Runner Mailer');
 	
 	$DB_SETTINGS = new FireHallDatabase();
-$DB_SETTINGS->setDsn(getenv('APP_DSN'));
-$DB_SETTINGS->setUserName(getenv('APP_DB_USERNAME') ? getenv('APP_DB_USERNAME') : 'riprunner');
-$DB_SETTINGS->setPassword(getenv('APP_DB_PASSWORD') ? getenv('APP_DB_PASSWORD') : 'riprunner');
-$DB_SETTINGS->setDatabaseName(getenv('APP_DB')      ? getenv('APP_DB') : 'riprunner');
+	$db_dsn = getenv('DATABASE_URL') ? getenv('DATABASE_URL') : getenv('APP_DSN');
+	$db_host = getenv('DB_HOST') ? getenv('DB_HOST') : getenv('APP_DB_HOST');
+	$db_port = getenv('DB_PORT') ? getenv('DB_PORT') : getenv('APP_DB_PORT');
+	$db_name = getenv('DB_NAME') ? getenv('DB_NAME') : (getenv('APP_DB') ? getenv('APP_DB') : 'riprunner');
+	$db_sslmode = getenv('DB_SSLMODE');
+	if ($db_dsn && strpos($db_dsn, 'postgres') === 0) {
+		$parsed = parse_url($db_dsn);
+		if ($parsed !== false) {
+			$db_host = isset($parsed['host']) ? $parsed['host'] : $db_host;
+			$db_port = isset($parsed['port']) ? $parsed['port'] : $db_port;
+			if (isset($parsed['path'])) {
+				$db_name = ltrim($parsed['path'], '/');
+			}
+			if (isset($parsed['query'])) {
+				parse_str($parsed['query'], $query);
+				if (isset($query['sslmode'])) {
+					$db_sslmode = $query['sslmode'];
+				}
+			}
+			$db_dsn_parts = array(
+				"host={$db_host}",
+				"port={$db_port}",
+				"dbname={$db_name}",
+			);
+			if ($db_sslmode) {
+				$db_dsn_parts[] = "sslmode={$db_sslmode}";
+			}
+			$db_dsn = 'pgsql:' . implode(';', $db_dsn_parts);
+		}
+	}
+	if (!$db_dsn && $db_host) {
+		$db_port = $db_port ? $db_port : '5432';
+		$db_dsn_parts = array(
+			"host={$db_host}",
+			"port={$db_port}",
+			"dbname={$db_name}",
+		);
+		if ($db_sslmode) {
+			$db_dsn_parts[] = "sslmode={$db_sslmode}";
+		}
+		$db_dsn = 'pgsql:' . implode(';', $db_dsn_parts);
+	}
+	$DB_SETTINGS->setDsn($db_dsn);
+	$DB_SETTINGS->setUserName(getenv('DB_USER') ? getenv('DB_USER') : (getenv('APP_DB_USERNAME') ? getenv('APP_DB_USERNAME') : 'riprunner'));
+	$DB_SETTINGS->setPassword(getenv('DB_PASS') ? getenv('DB_PASS') : (getenv('APP_DB_PASSWORD') ? getenv('APP_DB_PASSWORD') : 'riprunner'));
+	$DB_SETTINGS->setDatabaseName($db_name);
 
 	
 	// ----------------------------------------------------------------------
@@ -284,7 +333,7 @@ $MOBILE_SETTINGS->setFCM_SERVICES_JSON(getenv('APP_MOBILE_FCM_SERVICES_JSON')   
 	$WEBSITE_SETTINGS = new FireHallWebsite();
 $WEBSITE_SETTINGS->setFirehallName(getenv('APP_WEBSITE_FIREHALL_NAME')             ? getenv('APP_WEBSITE_FIREHALL_NAME') : 'My Volunteer Fire Department');
 $WEBSITE_SETTINGS->setFirehallAddress(getenv('APP_WEBSITE_FIREHALL_ADDRESS')       ? getenv('APP_WEBSITE_FIREHALL_ADDRESS') : '5155 Fire Fighter Road, Prince George, BC');
-$WEBSITE_SETTINGS->setFirehallTimezone(getenv('APP_WEBSITE_FIREHALL_TIMEZONE')     ? getenv('APP_WEBSITE_FIREHALL_TIMEZONE') : 'America/Vancouver');
+$WEBSITE_SETTINGS->setFirehallTimezone(getenv('APP_WEBSITE_FIREHALL_TIMEZONE')     ? getenv('APP_WEBSITE_FIREHALL_TIMEZONE') : 'Asia/Tehran');
 $WEBSITE_SETTINGS->setFirehallGeoLatitude(getenv('APP_WEBSITE_FIREHALL_GEO_LAT')   ? getenv('APP_WEBSITE_FIREHALL_GEO_LAT') : 54.0918642);
 $WEBSITE_SETTINGS->setFirehallGeoLongitude(getenv('APP_WEBSITE_FIREHALL_GEO_LONG') ? getenv('APP_WEBSITE_FIREHALL_GEO_LONG') : -122.6544671);
 $WEBSITE_SETTINGS->setGoogleMap_ApiKey(getenv('APP_GOOGLE_MAP_API_KEY')            ? getenv('APP_GOOGLE_MAP_API_KEY') : '');

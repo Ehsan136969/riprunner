@@ -30,6 +30,7 @@ if ( defined('INCLUSION_PERMITTED') === false ||
 	define('USER_ACCESS_SIGNAL_SMS',             0x2);
 	define('USER_ACCESS_CALLOUT_RESPOND_SELF',   0x4);
 	define('USER_ACCESS_CALLOUT_RESPOND_OTHERS', 0x8);
+	define('USER_ACCESS_DISPATCHER',             0x10);
 	//define('USER_ACCESS_X', 0x4);
 	//define('USER_ACCESS_X', 0x8);
 
@@ -44,6 +45,7 @@ if ( defined('INCLUSION_PERMITTED') === false ||
 	define( 'SMS_GATEWAY_EZTEXTING', 					'EZTEXTING');
 	define( 'SMS_GATEWAY_TWILIO', 						'TWILIO');
 	define( 'SMS_GATEWAY_PLIVO', 						'PLIVO');
+	define( 'SMS_GATEWAY_KAVENEGAR', 					'KAVENEGAR');
 	define( 'SMS_GATEWAY_AWS', 							'AWS');
 	
 	define( 'SMS_CALLOUT_PROVIDER_DEFAULT', 			'DEFAULT');

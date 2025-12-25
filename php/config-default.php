@@ -230,6 +230,9 @@ ini_set('session.save_path', $php_session_save_path);
 	define( 'DEFAULT_SMS_PROVIDER_TWILIO_BASE_URL', 	'https://api.twilio.com/xxxx-xx-xx/Accounts/X/Messages.xml');
 	define( 'DEFAULT_SMS_PROVIDER_TWILIO_AUTH_TOKEN', 	'X:X');
 	define( 'DEFAULT_SMS_PROVIDER_TWILIO_FROM', 		'+xxxxxxxxxx');
+	define( 'DEFAULT_SMS_PROVIDER_KAVENEGAR_BASE_URL', 	'https://api.kavenegar.com/v1/');
+	define( 'DEFAULT_SMS_PROVIDER_KAVENEGAR_API_KEY', 	'X');
+	define( 'DEFAULT_SMS_PROVIDER_KAVENEGAR_FROM', 		'');
 	define( 'DEFAULT_SMS_PROVIDER_PLIVO_BASE_URL', 	    'https://api.plivo.com/v1/');
 	define( 'DEFAULT_SMS_PROVIDER_PLIVO_AUTH_ID', 	    'XX');
 	define( 'DEFAULT_SMS_PROVIDER_PLIVO_AUTH_TOKEN', 	'XXXX');
@@ -246,6 +249,9 @@ ini_set('session.save_path', $php_session_save_path);
 	$LOCAL_DEBUG_SMS->setTwilioBaseURL(DEFAULT_SMS_PROVIDER_TWILIO_BASE_URL);
 	$LOCAL_DEBUG_SMS->setTwilioAuthToken(DEFAULT_SMS_PROVIDER_TWILIO_AUTH_TOKEN);
 	$LOCAL_DEBUG_SMS->setTwilioFromNumber(DEFAULT_SMS_PROVIDER_TWILIO_FROM);
+	//$LOCAL_DEBUG_SMS->setKavenegarBaseURL(DEFAULT_SMS_PROVIDER_KAVENEGAR_BASE_URL);
+	//$LOCAL_DEBUG_SMS->setKavenegarApiKey(DEFAULT_SMS_PROVIDER_KAVENEGAR_API_KEY);
+	//$LOCAL_DEBUG_SMS->setKavenegarFromNumber(DEFAULT_SMS_PROVIDER_KAVENEGAR_FROM);
 	$LOCAL_DEBUG_SMS->setSpecialContacts('Poison Control|16042642470;Canutec (Hazmat)|16139966666');
 	
 	// Using Plivo
@@ -381,4 +387,3 @@ ini_set('session.save_path', $php_session_save_path);
 
 	
 	// ------------------------------------------------------------------------
-

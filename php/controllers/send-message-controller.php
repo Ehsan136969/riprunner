@@ -25,6 +25,10 @@ use PHPMailer\PHPMailer\Exception;
 
 \riprunner\Authentication::setJWTCookie();
 \riprunner\Authentication::sec_session_start();
+if ($global_vm->auth->isAdmin != true) {
+	header('Location: '.$global_vm->RR_DOC_ROOT.'/controllers/callout-history-controller.php?'.$global_vm->RR_JWT_TOKEN_PARAM);
+	exit;
+}
 // Register our view and variables for the template
 if(isset($sendmsg_mv) === false ) {
 	$sendmsg_mv = new SendMessageViewModel($global_vm, $view_template_vars);
