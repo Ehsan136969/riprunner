@@ -25,7 +25,10 @@ if ( defined('INCLUSION_PERMITTED') === false ||
 require_once __RIPRUNNER_ROOT__ . '/logging.php';
 require_once __RIPRUNNER_ROOT__ . '/db/db_connection.php';
 require_once __RIPRUNNER_ROOT__ . '/db/sql_statement.php';
-require __RIPRUNNER_ROOT__ . '/vendor/autoload.php';
+$autoload = __RIPRUNNER_ROOT__ . '/vendor/autoload.php';
+if(file_exists($autoload)) {
+    require $autoload;
+}
 
 use Kreait\Firebase;
 use Kreait\Firebase\Messaging\CloudMessage;
