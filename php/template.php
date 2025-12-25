@@ -6,7 +6,10 @@
 namespace riprunner;
 
 require_once 'config_constants.php';
-require __DIR__ . '/vendor/autoload.php';
+$autoload = __DIR__ . '/vendor/autoload.php';
+if(file_exists($autoload)) {
+    require $autoload;
+}
 
 //use Twig\Extensions\TextExtension;
 
