@@ -9,9 +9,13 @@ if (file_exists($vendorAutoload) === false) {
     if (file_exists($vendorZip) && class_exists('ZipArchive')) {
         $zip = new ZipArchive();
         if ($zip->open($vendorZip) === true) {
-            $zip->extractTo(__DIR__ . '/php');
+            $zip->extractTo(__DIR__ . '/php/vendor');
             $zip->close();
         }
+    }
+    $nestedAutoload = __DIR__ . '/php/vendor/vendor/autoload.php';
+    if (file_exists($vendorAutoload) === false && file_exists($nestedAutoload)) {
+        @copy($nestedAutoload, $vendorAutoload);
     }
 }
 
