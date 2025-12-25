@@ -10,6 +10,15 @@ $autoload = __DIR__ . '/vendor/autoload.php';
 if(file_exists($autoload)) {
     require $autoload;
 }
+if(class_exists('\\Twig\\Environment') === false) {
+    $twig_autoloader = __DIR__ . '/third-party/Twig/Autoloader.php';
+    if(file_exists($twig_autoloader)) {
+        require_once $twig_autoloader;
+        if(class_exists('Twig_Autoloader')) {
+            \Twig_Autoloader::register();
+        }
+    }
+}
 
 //use Twig\Extensions\TextExtension;
 

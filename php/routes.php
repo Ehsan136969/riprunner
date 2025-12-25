@@ -15,6 +15,27 @@ if(defined('INCLUSION_PERMITTED') === false) {
     define( 'INCLUSION_PERMITTED', true);
 }
 
+function ensure_vendor_autoload() {
+    $autoload = __DIR__ . '/vendor/autoload.php';
+    if(file_exists($autoload)) {
+        return;
+    }
+    $vendorZip = dirname(__DIR__) . '/vendor-php-8.3.3.zip';
+    if(file_exists($vendorZip) && class_exists('ZipArchive')) {
+        $zip = new \ZipArchive();
+        if($zip->open($vendorZip) === true) {
+            $zip->extractTo(__DIR__ . '/vendor');
+            $zip->close();
+        }
+    }
+    $nestedAutoload = __DIR__ . '/vendor/vendor/autoload.php';
+    if(file_exists($autoload) === false && file_exists($nestedAutoload)) {
+        @copy($nestedAutoload, $autoload);
+    }
+}
+
+ensure_vendor_autoload();
+
 require_once 'config_constants.php';
 require_once 'common_functions.php';
 require_once __RIPRUNNER_ROOT__ . '/db/db_connection.php';
