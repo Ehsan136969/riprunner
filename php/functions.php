@@ -205,6 +205,204 @@ function getMobilePhoneListFromDB($FIREHALL, $db_connection, $filtered_sms_users
 	return $result;
 }
 
+function normalizeShiftNow($now, $timezone) {
+    if($now instanceof \DateTimeInterface) {
+        $timestamp = $now->getTimestamp();
+        return (new \DateTimeImmutable('@' . $timestamp))->setTimezone($timezone);
+    }
+    if($now !== null && $now !== '') {
+        return new \DateTimeImmutable($now, $timezone);
+    }
+    return new \DateTimeImmutable('now', $timezone);
+}
+
+function resolveShiftRule($rule_json) {
+    if($rule_json === null || $rule_json === '') {
+        return null;
+    }
+    $decoded = json_decode($rule_json, true);
+    if(!is_array($decoded)) {
+        return null;
+    }
+    $sequence = isset($decoded['sequence']) && is_array($decoded['sequence']) ? $decoded['sequence'] : array();
+    $normalized_sequence = array();
+    foreach($sequence as $entry) {
+        $value = trim((string)$entry);
+        if($value !== '') {
+            $normalized_sequence[] = strtoupper($value);
+        }
+    }
+    $startShift = $decoded['startShift'] ?? null;
+    if($startShift !== null) {
+        $startShift = strtoupper(trim((string)$startShift));
+    }
+    $rotationDays = isset($decoded['rotationDays']) ? (int)$decoded['rotationDays'] : 1;
+    if($rotationDays <= 0) {
+        $rotationDays = 1;
+    }
+    return array(
+        'sequence' => $normalized_sequence,
+        'startShift' => $startShift,
+        'rotationDays' => $rotationDays,
+    );
+}
+
+function getActiveShiftForStation($db_connection, $station_id, $now = null) {
+    if($db_connection === null) {
+        throw new \Exception('Database connection not provided.');
+    }
+    $stmt = $db_connection->prepare('SELECT json_rule, rotation_start, change_time, timezone FROM shift_rules WHERE station_id = :station_id LIMIT 1');
+    $stmt->bindParam(':station_id', $station_id);
+    $stmt->execute();
+    $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+    $stmt->closeCursor();
+    if($row === false) {
+        return null;
+    }
+
+    $rule = resolveShiftRule($row['json_rule'] ?? null);
+    if($rule === null || safe_count($rule['sequence']) === 0) {
+        return null;
+    }
+
+    $timezone = new \DateTimeZone($row['timezone'] ?? 'Asia/Tehran');
+    $rotation_start = $row['rotation_start'] ?? '';
+    $change_time = $row['change_time'] ?? '08:00:00';
+    if($rotation_start === null || trim($rotation_start) === '') {
+        return null;
+    }
+
+    $rotation_boundary = new \DateTimeImmutable(trim($rotation_start . ' ' . $change_time), $timezone);
+    $now_time = normalizeShiftNow($now, $timezone);
+
+    $seconds_since = $now_time->getTimestamp() - $rotation_boundary->getTimestamp();
+    $days_since = (int)floor($seconds_since / 86400);
+
+    $rotation_days = $rule['rotationDays'];
+    $periods_since = (int)floor($days_since / $rotation_days);
+
+    $sequence = $rule['sequence'];
+    $sequence_count = safe_count($sequence);
+    $start_index = array_search($rule['startShift'], $sequence, true);
+    if($start_index === false) {
+        $start_index = 0;
+    }
+    $shift_index = ($start_index + $periods_since) % $sequence_count;
+    if($shift_index < 0) {
+        $shift_index += $sequence_count;
+    }
+
+    $shift_start = $rotation_boundary->modify('+' . ($periods_since * $rotation_days) . ' days');
+    $shift_end = $shift_start->modify('+' . $rotation_days . ' days');
+
+    return array(
+        'shift_group' => $sequence[$shift_index],
+        'shift_start' => $shift_start->format('Y-m-d H:i:s'),
+        'shift_end' => $shift_end->format('Y-m-d H:i:s'),
+        'rotation_start' => $rotation_start,
+        'change_time' => $change_time,
+        'timezone' => $timezone->getName(),
+        'rule' => $rule,
+    );
+}
+
+function computeDistanceKm($lat1, $lng1, $lat2, $lng2) {
+    $earth_radius = 6371;
+    $lat1_rad = deg2rad((float)$lat1);
+    $lat2_rad = deg2rad((float)$lat2);
+    $delta_lat = deg2rad((float)$lat2 - (float)$lat1);
+    $delta_lng = deg2rad((float)$lng2 - (float)$lng1);
+
+    $a = sin($delta_lat / 2) * sin($delta_lat / 2) +
+        cos($lat1_rad) * cos($lat2_rad) *
+        sin($delta_lng / 2) * sin($delta_lng / 2);
+    $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+    return $earth_radius * $c;
+}
+
+function findNearestStation($stations, $lat, $lng) {
+    $closest = null;
+    $closest_distance = null;
+    foreach($stations as $station) {
+        $station_lat = isset($station['lat']) ? $station['lat'] : null;
+        $station_lng = isset($station['lng']) ? $station['lng'] : null;
+        if($station_lat === null || $station_lng === null) {
+            continue;
+        }
+        $distance = computeDistanceKm($lat, $lng, $station_lat, $station_lng);
+        if($closest_distance === null || $distance < $closest_distance) {
+            $closest_distance = $distance;
+            $closest = $station;
+            $closest['distance_km'] = round($distance, 3);
+        }
+    }
+    return $closest;
+}
+
+function sendBotMessage($base_url, $token, $chat_id, $text) {
+    if($token === null || $token === '' || $chat_id === null || $chat_id === '') {
+        return array('success' => false, 'message' => 'not_configured');
+    }
+    $base_url = rtrim($base_url, '/');
+    $url = $base_url . '/bot' . $token . '/sendMessage';
+    $data = array(
+        'chat_id' => $chat_id,
+        'text' => $text,
+    );
+    $s = curl_init();
+    curl_setopt($s, CURLOPT_URL, $url);
+    curl_setopt($s, CURLOPT_CUSTOMREQUEST, 'POST');
+    curl_setopt($s, CURLOPT_POSTFIELDS, http_build_query($data));
+    curl_setopt($s, CURLOPT_RETURNTRANSFER, true);
+    $result = curl_exec($s);
+    $error = curl_errno($s) ? curl_error($s) : null;
+    curl_close($s);
+    if($error !== null) {
+        return array('success' => false, 'message' => $error);
+    }
+    $decoded = json_decode($result, true);
+    if(isset($decoded['ok'])) {
+        return array('success' => (bool)$decoded['ok']);
+    }
+    return array('success' => false, 'message' => 'unexpected_response');
+}
+
+function getFirefightersForStationShift($db_connection, $station_id, $shift_group) {
+    if($db_connection === null) {
+        throw new \Exception('Database connection not provided.');
+    }
+    $shift_group = strtoupper(trim((string)$shift_group));
+    $stmt = $db_connection->prepare(
+        'SELECT id, name, phone FROM firefighters
+        WHERE station_id = :station_id AND shift_group = :shift_group AND is_active = true'
+    );
+    $stmt->execute(array(
+        ':station_id' => $station_id,
+        ':shift_group' => $shift_group,
+    ));
+    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    $stmt->closeCursor();
+    return $rows;
+}
+
+function insertNotificationRecord($db_connection, $incident_id, $channel, $recipient, $message, $status, $provider_response = null) {
+    if($db_connection === null) {
+        return;
+    }
+    $stmt = $db_connection->prepare(
+        'INSERT INTO notifications (incident_id, channel, recipient, message, status, provider_response)
+        VALUES (:incident_id, :channel, :recipient, :message, :status, :provider_response)'
+    );
+    $stmt->execute(array(
+        ':incident_id' => $incident_id,
+        ':channel' => $channel,
+        ':recipient' => $recipient,
+        ':message' => $message,
+        ':status' => $status,
+        ':provider_response' => $provider_response,
+    ));
+}
+
 function getEmailListFromDB($FIREHALL, $db_connection) {
     global $log;
     

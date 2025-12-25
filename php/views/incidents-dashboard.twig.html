@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>مدیریت حوادث جدید</title>
+        <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/main.css" />
+        <script type="text/JavaScript" src="{{ gvm.RR_DOC_ROOT }}/js/jquery-2.1.1.min.js"></script>
+        <style>
+            .incident-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 16px;
+            }
+            .incident-table th,
+            .incident-table td {
+                border: 1px solid #ccc;
+                padding: 8px;
+                text-align: right;
+            }
+            .incident-table th {
+                background: #f3f3f3;
+            }
+            .incident-actions {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+            .status-pill {
+                padding: 2px 8px;
+                border-radius: 12px;
+                background: #e8eef5;
+                display: inline-block;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container_center">
+            <h1>مدیریت حوادث جدید</h1>
+            <div>
+                <label for="status-filter">فیلتر وضعیت:</label>
+                <select id="status-filter">
+                    <option value="">همه</option>
+                    <option value="new">جدید</option>
+                    <option value="location_received">موقعیت دریافت شد</option>
+                    <option value="dispatched">اعزام شده</option>
+                </select>
+                <button type="button" onclick="loadIncidents()">بارگذاری</button>
+            </div>
+            <table class="incident-table">
+                <thead>
+                    <tr>
+                        <th>کد</th>
+                        <th>شماره تماس</th>
+                        <th>وضعیت</th>
+                        <th>ایستگاه پیشنهاد</th>
+                        <th>ایستگاه اعزام</th>
+                        <th>آخرین موقعیت</th>
+                        <th>اقدامات</th>
+                    </tr>
+                </thead>
+                <tbody id="incident-body">
+                    <tr>
+                        <td colspan="7">در حال بارگذاری...</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2 style="margin-top: 24px;">تماس‌های اخیر (Caller Draft)</h2>
+            <table class="incident-table">
+                <thead>
+                    <tr>
+                        <th>شماره تماس</th>
+                        <th>آخرین تماس</th>
+                        <th>وضعیت</th>
+                        <th>اقدامات</th>
+                    </tr>
+                </thead>
+                <tbody id="draft-body">
+                    <tr>
+                        <td colspan="4">در حال بارگذاری...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <script type="text/javascript">
+            function loadIncidents() {
+                var status = document.getElementById('status-filter').value;
+                var url = '{{ gvm.RR_DOC_ROOT }}/api/incidents';
+                if (status) {
+                    url += '?status=' + encodeURIComponent(status);
+                }
+                fetch(url).then(function(resp) {
+                    return resp.json();
+                }).then(function(data) {
+                    renderIncidents(data.results || []);
+                }).catch(function() {
+                    renderError('خطا در دریافت لیست حوادث');
+                });
+            }
+
+            function loadDrafts() {
+                fetch('{{ gvm.RR_DOC_ROOT }}/api/caller/drafts')
+                    .then(function(resp) { return resp.json(); })
+                    .then(function(data) { renderDrafts(data.results || []); })
+                    .catch(function() {
+                        var body = document.getElementById('draft-body');
+                        body.innerHTML = '<tr><td colspan="4" class="error">خطا در دریافت تماس‌ها</td></tr>';
+                    });
+            }
+
+            function renderError(message) {
+                var body = document.getElementById('incident-body');
+                body.innerHTML = '<tr><td colspan="7" class="error">' + message + '</td></tr>';
+            }
+
+            function renderIncidents(incidents) {
+                var body = document.getElementById('incident-body');
+                if (!incidents.length) {
+                    body.innerHTML = '<tr><td colspan="7">موردی یافت نشد.</td></tr>';
+                    return;
+                }
+                body.innerHTML = '';
+                incidents.forEach(function(incident) {
+                    var row = document.createElement('tr');
+                    row.innerHTML = '' +
+                        '<td>' + incident.incident_code + '</td>' +
+                        '<td>' + (incident.caller_phone || '-') + '</td>' +
+                        '<td><span class="status-pill">' + incident.status + '</span></td>' +
+                        '<td>' + (incident.suggested_station_name || '-') + '</td>' +
+                        '<td>' + (incident.dispatched_station_name || '-') + '</td>' +
+                        '<td>' + formatLocation(incident) + '</td>' +
+                        '<td>' + buildActions(incident) + '</td>';
+                    body.appendChild(row);
+                });
+            }
+
+            function renderDrafts(drafts) {
+                var body = document.getElementById('draft-body');
+                if (!drafts.length) {
+                    body.innerHTML = '<tr><td colspan="4">موردی یافت نشد.</td></tr>';
+                    return;
+                }
+                body.innerHTML = '';
+                drafts.forEach(function(draft) {
+                    var row = document.createElement('tr');
+                    row.innerHTML = '' +
+                        '<td>' + draft.caller_number + '</td>' +
+                        '<td>' + draft.last_call_time + '</td>' +
+                        '<td><span class="status-pill">' + draft.status + '</span></td>' +
+                        '<td><button type="button" onclick="createIncidentFromDraft(\\'' + draft.caller_number + '\\')">ثبت حادثه</button></td>';
+                    body.appendChild(row);
+                });
+            }
+
+            function formatLocation(incident) {
+                if (!incident.last_lat || !incident.last_lng) {
+                    return '-';
+                }
+                return incident.last_lat + ', ' + incident.last_lng;
+            }
+
+            function buildActions(incident) {
+                var html = '<div class="incident-actions">';
+                html += '<button type="button" onclick="suggestStation(' + incident.id + ')">پیشنهاد ایستگاه</button>';
+                html += '<button type="button" onclick="dispatchIncident(' + incident.id + ', ' + (incident.suggested_station_id || 0) + ')">اعزام</button>';
+                html += '</div>';
+                return html;
+            }
+
+            function suggestStation(incidentId) {
+                fetch('{{ gvm.RR_DOC_ROOT }}/api/incidents/' + incidentId + '/suggested-station')
+                    .then(function(resp) { return resp.json(); })
+                    .then(function(data) {
+                        alert('ایستگاه پیشنهاد شد: ' + (data.station ? data.station.name : 'نامشخص'));
+                        loadIncidents();
+                    })
+                    .catch(function() {
+                        alert('خطا در پیشنهاد ایستگاه');
+                    });
+            }
+
+            function dispatchIncident(incidentId, suggestedStationId) {
+                var stationId = suggestedStationId;
+                if (!stationId) {
+                    stationId = prompt('شناسه ایستگاه را وارد کنید:');
+                }
+                if (!stationId) {
+                    return;
+                }
+                fetch('{{ gvm.RR_DOC_ROOT }}/api/incidents/' + incidentId + '/dispatch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ station_id: parseInt(stationId, 10) })
+                }).then(function(resp) {
+                    return resp.json();
+                }).then(function(data) {
+                    if (data.success) {
+                        alert('اعزام انجام شد.');
+                        loadIncidents();
+                    } else {
+                        alert(data.message || 'خطا در اعزام');
+                    }
+                }).catch(function() {
+                    alert('خطا در اعزام');
+                });
+            }
+
+            function createIncidentFromDraft(callerNumber) {
+                var description = prompt('شرح کوتاه حادثه (اختیاری):') || '';
+                fetch('{{ gvm.RR_DOC_ROOT }}/api/incidents', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ caller_number: callerNumber, description: description })
+                }).then(function(resp) {
+                    return resp.json();
+                }).then(function(data) {
+                    if (data.success) {
+                        alert('حادثه ثبت شد و لینک ارسال گردید.');
+                        loadIncidents();
+                    } else {
+                        alert(data.message || 'خطا در ثبت حادثه');
+                    }
+                }).catch(function() {
+                    alert('خطا در ثبت حادثه');
+                });
+            }
+
+            loadIncidents();
+            loadDrafts();
+        </script>
+    </body>
+</html>

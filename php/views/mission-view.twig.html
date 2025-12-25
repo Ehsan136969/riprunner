@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>مشاهده مأموریت</title>
+        <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/main.css" />
+        <script type="text/JavaScript" src="{{ gvm.RR_DOC_ROOT }}/js/jquery-2.1.1.min.js"></script>
+    </head>
+    <body>
+        <div class="container_center">
+            <h1>جزئیات مأموریت</h1>
+            {% if error_message %}
+                <p class="error">{{ error_message }}</p>
+            {% else %}
+                <div>
+                    <p><strong>کد حادثه:</strong> {{ mission.incident.incident_code }}</p>
+                    {% if mission.station %}
+                        <p><strong>ایستگاه اعزامی:</strong> {{ mission.station.name }}</p>
+                    {% endif %}
+                    {% if mission.location %}
+                        <p><strong>مختصات:</strong> {{ mission.location.lat }}, {{ mission.location.lng }}</p>
+                    {% else %}
+                        <p>موقعیت حادثه ثبت نشده است.</p>
+                    {% endif %}
+                </div>
+                {% if mission.location %}
+                    <div style="margin-top: 20px;">
+                        <iframe id="neshan-map"
+                                title="Neshan Map"
+                                width="100%"
+                                height="400"
+                                style="border:0;"
+                                loading="lazy"
+                                src="https://neshan.org/maps/@{{ mission.location.lat }},{{ mission.location.lng }},16z"></iframe>
+                    </div>
+                    <div style="margin-top: 12px;">
+                        <a href="https://neshan.org/maps/@{{ mission.location.lat }},{{ mission.location.lng }},16z" target="_blank">
+                            مشاهده در نشان
+                        </a>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </body>
+</html>

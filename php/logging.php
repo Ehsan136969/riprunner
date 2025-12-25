@@ -15,52 +15,63 @@ if ( defined('INCLUSION_PERMITTED') === false ||
 if(defined('__RIPRUNNER_ROOT__') === false) {
     define('__RIPRUNNER_ROOT__', dirname(__FILE__));
 }
-require __DIR__ . '/vendor/autoload.php';
-
-// Tell log4php to use our configuration file.
-//\Logger::configure(__RIPRUNNER_ROOT__ . '/config-logging.xml');
-// Fetch a logger, it will inherit settings from the root logger
-//$log = \Logger::getLogger('myLogger');
-
-// Ensure we locate the logfile in one common place
-//$appender = $log->getRootLogger()->getAppender('myAppender');
-//$appender->setFile(__RIPRUNNER_ROOT__ . '/' . $appender->getFile());
-
-// Use Monolog's `Logger` namespace:
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 
 $log = null;
-
-// The model class handling variable requests dynamically
-class RipLogger extends Logger {
-
-	private $log;
-	public function setLogger($mylogger) {
-		$this->log = $mylogger;
-	}
-	public function trace($msg) {
-		//$this->log->info($msg);
-	}
-	public function warn($msg) {
-		$this->log->warning($msg);
-	}
-
-	//$appender = $log->getRootLogger()->getAppender('myAppender');
-	public function getRootLoggerPath() {
-		return $this->log->getHandlers()[0]->getUrl();
-	}
+$autoload = __DIR__ . '/vendor/autoload.php';
+if(file_exists($autoload)) {
+    require $autoload;
 }
 
-$log = new RipLogger('myLogger');
-$log->setLogger($log);
+if(class_exists('\\Monolog\\Logger')) {
+    // Use Monolog's `Logger` namespace:
+    $baseLoggerClass = '\\Monolog\\Logger';
+    $handlerClass = '\\Monolog\\Handler\\StreamHandler';
 
-// Declare a new handler and store it in the $logstream variable
-// This handler will be triggered by events of log level INFO and above
-$logstream = new StreamHandler(__RIPRUNNER_ROOT__ . '/riprunner.log', Logger::INFO);
+    class RipLogger extends \Monolog\Logger {
+        private $log;
+        public function setLogger($mylogger) {
+            $this->log = $mylogger;
+        }
+        public function trace($msg) {
+            //$this->log->info($msg);
+        }
+        public function warn($msg) {
+            $this->log->warning($msg);
+        }
+        public function getRootLoggerPath() {
+            return $this->log->getHandlers()[0]->getUrl();
+        }
+    }
 
-// Push the $logstream handler onto the Logger object
-$log->pushHandler($logstream);
+    $log = new RipLogger('myLogger');
+    $log->setLogger($log);
+    $logstream = new $handlerClass(__RIPRUNNER_ROOT__ . '/riprunner.log', $baseLoggerClass::INFO);
+    $log->pushHandler($logstream);
+}
+else {
+    class RipLogger {
+        private $path;
+        public function __construct($path) {
+            $this->path = $path;
+        }
+        public function trace($msg) {
+        }
+        public function warn($msg) {
+            $this->write('WARN', $msg);
+        }
+        public function error($msg) {
+            $this->write('ERROR', $msg);
+        }
+        public function getRootLoggerPath() {
+            return $this->path;
+        }
+        private function write($level, $msg) {
+            $line = '[' . date('c') . '] ' . $level . ': ' . $msg . PHP_EOL;
+            @file_put_contents($this->path, $line, FILE_APPEND);
+        }
+    }
+    $log = new RipLogger(__RIPRUNNER_ROOT__ . '/riprunner.log');
+}
 
 function throwExceptionAndLogError($ui_error_msg, $log_error_msg) {
     global $log;

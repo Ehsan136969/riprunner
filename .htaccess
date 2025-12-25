@@ -1,0 +1,16 @@
+# Root .htaccess to avoid 403 and forward requests to the PHP app inside /php
+
+DirectoryIndex index.php
+
+RewriteEngine On
+RewriteBase /
+
+# If the requested path exists inside /php (static assets, etc.) serve it from there
+RewriteCond %{DOCUMENT_ROOT}/php%{REQUEST_URI} -f [OR]
+RewriteCond %{DOCUMENT_ROOT}/php%{REQUEST_URI} -d
+RewriteRule ^(.*)$ php/$1 [L]
+
+# Otherwise route everything to the PHP router
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ php/routes.php [QSA,L]

@@ -48,6 +48,13 @@ function ensure_tables($pdo, $driver) {
             ."consumed_at TIMESTAMP NULL,\n"
             ."created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n"
             .")";
+        $table_sql[] = "CREATE TABLE IF NOT EXISTS incident_dispatch_tokens (\n"
+            ."id SERIAL PRIMARY KEY,\n"
+            ."incident_id INTEGER NOT NULL,\n"
+            ."token VARCHAR(255) NOT NULL,\n"
+            ."expires_at TIMESTAMP NULL,\n"
+            ."created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n"
+            .")";
         $table_sql[] = "CREATE TABLE IF NOT EXISTS incident_locations (\n"
             ."id SERIAL PRIMARY KEY,\n"
             ."incident_id INTEGER NOT NULL,\n"
@@ -118,6 +125,13 @@ function ensure_tables($pdo, $driver) {
             ."token VARCHAR(255) NOT NULL,\n"
             ."expires_at TIMESTAMP NULL DEFAULT NULL,\n"
             ."consumed_at TIMESTAMP NULL DEFAULT NULL,\n"
+            ."created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n"
+            .") ENGINE=InnoDB DEFAULT CHARSET=utf8";
+        $table_sql[] = "CREATE TABLE IF NOT EXISTS incident_dispatch_tokens (\n"
+            ."id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,\n"
+            ."incident_id INT(11) NOT NULL,\n"
+            ."token VARCHAR(255) NOT NULL,\n"
+            ."expires_at TIMESTAMP NULL DEFAULT NULL,\n"
             ."created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n"
             .") ENGINE=InnoDB DEFAULT CHARSET=utf8";
         $table_sql[] = "CREATE TABLE IF NOT EXISTS incident_locations (\n"

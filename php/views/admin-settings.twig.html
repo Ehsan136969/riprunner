@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>مدیریت ایستگاه‌ها و شیفت‌ها</title>
+        <link rel="stylesheet" href="{{ gvm.RR_DOC_ROOT }}/styles/main.css" />
+        <script type="text/JavaScript" src="{{ gvm.RR_DOC_ROOT }}/js/jquery-2.1.1.min.js"></script>
+        <style>
+            .admin-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 16px;
+                margin-top: 16px;
+            }
+            .admin-card {
+                border: 1px solid #ccc;
+                padding: 12px;
+            }
+            .admin-card h3 {
+                margin-top: 0;
+            }
+            .admin-card input,
+            .admin-card textarea,
+            .admin-card select {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+            .admin-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 8px;
+            }
+            .admin-table th,
+            .admin-table td {
+                border: 1px solid #ccc;
+                padding: 6px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container_center">
+            <h1>مدیریت ایستگاه‌ها و شیفت‌ها</h1>
+            <div class="admin-grid">
+                <div class="admin-card">
+                    <h3>ایستگاه‌ها</h3>
+                    <input type="text" id="station-name" placeholder="نام ایستگاه">
+                    <input type="number" id="station-lat" placeholder="عرض جغرافیایی">
+                    <input type="number" id="station-lng" placeholder="طول جغرافیایی">
+                    <select id="station-active">
+                        <option value="true">فعال</option>
+                        <option value="false">غیرفعال</option>
+                    </select>
+                    <button type="button" onclick="createStation()">ثبت ایستگاه</button>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>نام</th>
+                                <th>مختصات</th>
+                                <th>وضعیت</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stations-body">
+                            <tr><td colspan="4">در حال بارگذاری...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="admin-card">
+                    <h3>نیروها</h3>
+                    <input type="number" id="firefighter-station" placeholder="شناسه ایستگاه">
+                    <input type="text" id="firefighter-name" placeholder="نام">
+                    <input type="text" id="firefighter-phone" placeholder="شماره موبایل">
+                    <input type="text" id="firefighter-role" placeholder="سمت">
+                    <input type="text" id="firefighter-shift" placeholder="گروه شیفت (A/B/C)">
+                    <select id="firefighter-active">
+                        <option value="true">فعال</option>
+                        <option value="false">غیرفعال</option>
+                    </select>
+                    <button type="button" onclick="createFirefighter()">ثبت نیرو</button>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>ایستگاه</th>
+                                <th>نام</th>
+                                <th>شیفت</th>
+                            </tr>
+                        </thead>
+                        <tbody id="firefighters-body">
+                            <tr><td colspan="4">در حال بارگذاری...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="admin-card">
+                    <h3>قوانین شیفت</h3>
+                    <input type="number" id="rule-station" placeholder="شناسه ایستگاه">
+                    <textarea id="rule-json" rows="4" placeholder='{"sequence":["A","B","C"],"startShift":"B","rotationDays":1}'></textarea>
+                    <input type="date" id="rule-rotation-start">
+                    <input type="time" id="rule-change-time" value="08:00">
+                    <input type="text" id="rule-timezone" value="Asia/Tehran">
+                    <button type="button" onclick="createRule()">ثبت قانون شیفت</button>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>ایستگاه</th>
+                                <th>شروع</th>
+                                <th>ساعت</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rules-body">
+                            <tr><td colspan="4">در حال بارگذاری...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            function loadStations() {
+                fetch('{{ gvm.RR_DOC_ROOT }}/api/admin/stations')
+                    .then(resp => resp.json())
+                    .then(data => {
+                        var body = document.getElementById('stations-body');
+                        body.innerHTML = '';
+                        (data.results || []).forEach(station => {
+                            var row = document.createElement('tr');
+                            row.innerHTML = '<td>' + station.id + '</td>' +
+                                '<td>' + station.name + '</td>' +
+                                '<td>' + station.lat + ', ' + station.lng + '</td>' +
+                                '<td>' + (station.is_active ? 'فعال' : 'غیرفعال') + '</td>';
+                            body.appendChild(row);
+                        });
+                        if (!body.children.length) {
+                            body.innerHTML = '<tr><td colspan="4">موردی یافت نشد.</td></tr>';
+                        }
+                    });
+            }
+
+            function loadFirefighters() {
+                fetch('{{ gvm.RR_DOC_ROOT }}/api/admin/firefighters')
+                    .then(resp => resp.json())
+                    .then(data => {
+                        var body = document.getElementById('firefighters-body');
+                        body.innerHTML = '';
+                        (data.results || []).forEach(ff => {
+                            var row = document.createElement('tr');
+                            row.innerHTML = '<td>' + ff.id + '</td>' +
+                                '<td>' + ff.station_id + '</td>' +
+                                '<td>' + ff.name + '</td>' +
+                                '<td>' + (ff.shift_group || '-') + '</td>';
+                            body.appendChild(row);
+                        });
+                        if (!body.children.length) {
+                            body.innerHTML = '<tr><td colspan="4">موردی یافت نشد.</td></tr>';
+                        }
+                    });
+            }
+
+            function loadRules() {
+                fetch('{{ gvm.RR_DOC_ROOT }}/api/admin/shift-rules')
+                    .then(resp => resp.json())
+                    .then(data => {
+                        var body = document.getElementById('rules-body');
+                        body.innerHTML = '';
+                        (data.results || []).forEach(rule => {
+                            var row = document.createElement('tr');
+                            row.innerHTML = '<td>' + rule.id + '</td>' +
+                                '<td>' + rule.station_id + '</td>' +
+                                '<td>' + rule.rotation_start + '</td>' +
+                                '<td>' + rule.change_time + '</td>';
+                            body.appendChild(row);
+                        });
+                        if (!body.children.length) {
+                            body.innerHTML = '<tr><td colspan="4">موردی یافت نشد.</td></tr>';
+                        }
+                    });
+            }
+
+            function createStation() {
+                fetch('{{ gvm.RR_DOC_ROOT }}/api/admin/stations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: document.getElementById('station-name').value,
+                        lat: parseFloat(document.getElementById('station-lat').value),
+                        lng: parseFloat(document.getElementById('station-lng').value),
+                        is_active: document.getElementById('station-active').value === 'true'
+                    })
+                }).then(resp => resp.json())
+                  .then(() => loadStations());
+            }
+
+            function createFirefighter() {
+                fetch('{{ gvm.RR_DOC_ROOT }}/api/admin/firefighters', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        station_id: parseInt(document.getElementById('firefighter-station').value, 10),
+                        name: document.getElementById('firefighter-name').value,
+                        phone: document.getElementById('firefighter-phone').value,
+                        role_in_station: document.getElementById('firefighter-role').value,
+                        shift_group: document.getElementById('firefighter-shift').value,
+                        is_active: document.getElementById('firefighter-active').value === 'true'
+                    })
+                }).then(resp => resp.json())
+                  .then(() => loadFirefighters());
+            }
+
+            function createRule() {
+                var jsonRule = document.getElementById('rule-json').value;
+                try {
+                    JSON.parse(jsonRule);
+                } catch (e) {
+                    alert('فرمت JSON صحیح نیست');
+                    return;
+                }
+                fetch('{{ gvm.RR_DOC_ROOT }}/api/admin/shift-rules', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        station_id: parseInt(document.getElementById('rule-station').value, 10),
+                        json_rule: jsonRule,
+                        rotation_start: document.getElementById('rule-rotation-start').value,
+                        change_time: document.getElementById('rule-change-time').value,
+                        timezone: document.getElementById('rule-timezone').value
+                    })
+                }).then(resp => resp.json())
+                  .then(() => loadRules());
+            }
+
+            loadStations();
+            loadFirefighters();
+            loadRules();
+        </script>
+    </body>
+</html>

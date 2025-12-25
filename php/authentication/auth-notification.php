@@ -18,7 +18,10 @@ if ( defined('INCLUSION_PERMITTED') === false ||
 	die( 'This file must not be invoked directly.' );
 }
 require_once __RIPRUNNER_ROOT__ . '/config/config_manager.php';
-require __RIPRUNNER_ROOT__ . '/vendor/autoload.php';
+$autoload = __RIPRUNNER_ROOT__ . '/vendor/autoload.php';
+if(file_exists($autoload)) {
+    require $autoload;
+}
 require_once __RIPRUNNER_ROOT__ . '/functions.php';
 require_once __RIPRUNNER_ROOT__ . '/logging.php';
 require_once __RIPRUNNER_ROOT__ . '/models/global-model.php';
