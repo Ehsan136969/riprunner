@@ -1,5 +1,6 @@
 ### LOCAL CONFIG FILES
 config.php
+!php/config.php
 config-jsmap-extras.php
 config-javascript-map.php
 php/apk/*
